@@ -1,4 +1,7 @@
 ColorPrimary = '#3B7A97'
 ColorSecundary = '#EFC456'
 ColorSecundaryDark = '#D1AC4C'
-ColorsDisabled='#E2E2E0'
+ColorsDisabled ='#E2E2E0'
+ColorSalida = '#2cd2d4'
+ColorSalidaDark = '#1a8c8e'
+ColorWhite = '#FFFFFF'
