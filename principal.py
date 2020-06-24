@@ -60,7 +60,7 @@ def varEntradas():
 
     lblID = tk.Label(ventana, text="DNI: ",bg=Colors.ColorWhite)
     lblID.place(x=40, y=90)
-    cID = tk.Entry(ventana)
+    cID= tk.Entry(ventana)
     cID.place(x=150, y=90)
 
     bComprobar = tk.Button(ventana,image=Search)
@@ -93,6 +93,8 @@ def varEntradas():
     lblFormEval = tk.Label(ventana, text="EVALUAR PRÉSTAMO",bg=Colors.ColorWhite, font=FontTitle)
     lblFormEval.place(x=40, y=270)
 
+    global cEdad, cIngreso, cCapPago, cTiempo, cHijos, cDeudas
+    global lblEdad, lblIngreso, lblCapPago, lblTiempo, lblHijos, lblDeudas
     lblEdad = tk.Label(ventana, bg=Colors.ColorWhite,text="Edad: ")
     lblEdad.place(x=40, y=300)
     cEdad = tk.Entry(ventana)
@@ -123,9 +125,31 @@ def varEntradas():
     cDeudas = tk.Entry(ventana)
     cDeudas.place(x=150, y=460)
 
-    bEvaluar = tk.Button(ventana, bg=Colors.ColorSecundary, text="EVALUAR", font=comp, command=ingresar)
+    bEvaluar = tk.Button(ventana, bg=Colors.ColorSecundary, text="EVALUAR", font=comp, command=evaluar_prest)
     bEvaluar.configure(relief=tk.GROOVE, background=Colors.ColorSecundary, activebackground=Colors.ColorSecundaryDark)
     bEvaluar.place(x=120,y=500)
+    panel_evaluacion()
+
+def panel_evaluacion():
+
+    panel = tk.Label(ventana, width=80, height=10, borderwidth=1, relief="sunken",bg="white")
+    panel.place(x=333, y=415)
+
+    lblTitle = tk.Label(ventana, text = "RESULTADOS DE EVALUACIÓN", bg="white",font = font.Font(family='helvetica', size=15, weight="bold"))
+    lblTitle.place(x=335, y=420)
+
+    lblPrestamo = tk.Label(ventana, text = "EL MONTO A PRESTAR ES DE: S/. ",bg="white")
+    lblPrestamo.place(x=335,y=460)
+
+    lblTipPr = tk.Label(ventana, text="TIPO DE PRESTAMO: ", bg="white")
+    lblTipPr.place(x=335, y=490)
+
+    global lblResp, lblcat
+    lblResp= tk.Label(ventana, text="", bg="white")
+    lblResp.place(x=515,y=460)
+
+    lblcat = tk.Label(ventana, text="", bg="white")
+    lblcat.place(x=450, y=490)
 
 def switchEdad():
     if (bEdad['state'] == tk.NORMAL):
@@ -518,6 +542,27 @@ def grafPrestamo():
     toolbar.place(x=333, y=375)
     toolbar.update()
 
+def evaluar_prest():
+    global edad, ingreso, cap_pago, tiempo, hijos, deudas
+    edad = cEdad.get()
+    ingreso = cIngreso.get()
+    cap_pago = cCapPago.get()
+    tiempo = cTiempo.get()
+    hijos = cHijos.get()
+    deudas = cDeudas.get()
+
+    """
+    #SOLO ES PARA TESTEAR LOS ENTRYS
+    lblEdad.configure(text=edad)
+    lblIngreso.configure(text=ingreso)
+    lblCapPago.configure(text=cap_pago)
+    lblTiempo.configure(text=tiempo)
+    lblHijos.configure(text=hijos)
+    lblDeudas.configure(text=deudas)
+    """
+    fuzzi()
+
+"""
 #Valores de entrada EJEMPLO
 edad = 26
 ingreso = 2500
@@ -525,44 +570,53 @@ hijos = 2
 cap_pago = 750
 tiempo = 3
 deudas = 5
+"""
+def fuzzi():
+    edad_lvl_jo = fuzz.interp_membership(x_edad, ed_jo, edad)
+    edad_lvl_ad = fuzz.interp_membership(x_edad, ed_ad, edad)
+    edad_lvl_vi = fuzz.interp_membership(x_edad, ed_vi, edad)
 
+    ingreso_lvl_ba = fuzz.interp_membership(x_ingreso, in_ba, ingreso)
+    ingreso_lvl_me = fuzz.interp_membership(x_ingreso, in_me, ingreso)
+    ingreso_lvl_al = fuzz.interp_membership(x_ingreso, in_al, ingreso)
 
-edad_lvl_jo = fuzz.interp_membership(x_edad, ed_jo, edad)
-edad_lvl_ad = fuzz.interp_membership(x_edad, ed_ad, edad)
-edad_lvl_vi = fuzz.interp_membership(x_edad, ed_vi, edad)
+    hijos_lvl_ba = fuzz.interp_membership(x_hijos, hi_ba, hijos)
+    hijos_lvl_mo = fuzz.interp_membership(x_hijos, hi_mo, hijos)
+    hijos_lvl_al = fuzz.interp_membership(x_hijos, hi_al, hijos)
 
-ingreso_lvl_ba = fuzz.interp_membership(x_ingreso, in_ba, ingreso)
-ingreso_lvl_me = fuzz.interp_membership(x_ingreso, in_me, ingreso)
-ingreso_lvl_al = fuzz.interp_membership(x_ingreso, in_al, ingreso)
+    cappago_lvl_ba = fuzz.interp_membership(x_capapago, cp_ba, cap_pago)
+    cappago_lvl_me = fuzz.interp_membership(x_capapago, cp_me, cap_pago)
+    cappago_lvl_al = fuzz.interp_membership(x_capapago, cp_al, cap_pago)
 
-hijos_lvl_ba = fuzz.interp_membership(x_hijos, hi_ba, hijos)
-hijos_lvl_mo = fuzz.interp_membership(x_hijos, hi_mo, hijos)
-hijos_lvl_al = fuzz.interp_membership(x_hijos, hi_al, hijos)
+    tiempo_lvl_nu = fuzz.interp_membership(x_tiempo, ti_nu, tiempo)
+    tiempo_lvl_pr = fuzz.interp_membership(x_tiempo, ti_pr, tiempo)
+    tiempo_lvl_an = fuzz.interp_membership(x_tiempo, ti_an, tiempo)
 
-cappago_lvl_ba = fuzz.interp_membership(x_capapago, cp_ba, cap_pago)
-cappago_lvl_me = fuzz.interp_membership(x_capapago, cp_me, cap_pago)
-cappago_lvl_al = fuzz.interp_membership(x_capapago, cp_al, cap_pago)
+    deudas_lvl_ba = fuzz.interp_membership(x_deudas, de_ba, deudas)
+    deudas_lvl_me = fuzz.interp_membership(x_deudas, de_me, deudas)
+    deudas_lvl_al = fuzz.interp_membership(x_deudas, de_al, deudas)
 
-tiempo_lvl_nu = fuzz.interp_membership(x_tiempo, ti_nu, tiempo)
-tiempo_lvl_pr = fuzz.interp_membership(x_tiempo, ti_pr, tiempo)
-tiempo_lvl_an = fuzz.interp_membership(x_tiempo, ti_an, tiempo)
+    #reglas INGRESOS - CAPACIDAD - EDAD - TIEMPO - HIJOS - DEUDAS
+    activar_regla_1 = np.fmax(ingreso_lvl_ba, cappago_lvl_ba)
+    activar_regla_2 = np.fmax(ingreso_lvl_me, cappago_lvl_me)
+    activar_regla_3 = np.fmax(ingreso_lvl_al, cappago_lvl_al)
 
-deudas_lvl_ba = fuzz.interp_membership(x_deudas, de_ba, deudas)
-deudas_lvl_me = fuzz.interp_membership(x_deudas, de_me, deudas)
-deudas_lvl_al = fuzz.interp_membership(x_deudas, de_al, deudas)
+    prestamo_ba = np.fmin(activar_regla_1, pr_ba)
+    prestamo_md = np.fmin(activar_regla_2, pr_me)
+    prestamo_al = np.fmin(activar_regla_3, pr_al)
 
-#reglas INGRESOS - CAPACIDAD - EDAD - TIEMPO - HIJOS - DEUDAS
-activar_regla_1 = np.fmax(ingreso_lvl_ba, cappago_lvl_ba)
-activar_regla_2 = np.fmax(ingreso_lvl_me, cappago_lvl_me)
-activar_regla_3 = np.fmax(ingreso_lvl_al, cappago_lvl_al)
+    agregar = np.fmax(prestamo_ba,np.fmax(prestamo_md,prestamo_md))
+    prestamo = fuzz.defuzz(x_prestamo,agregar,'centroid')
+    print("RESULTADO PARA PROBAR, NO ES LA VERSION FINAL")
+    print("EL MONTO A PRESTAR ES DE: S/.",prestamo)
 
-prestamo_ba = np.fmin(activar_regla_1, pr_ba)
-prestamo_md = np.fmin(activar_regla_2, pr_me)
-prestamo_al = np.fmin(activar_regla_3, pr_al)
-
-agregar = np.fmax(prestamo_ba,np.fmax(prestamo_md,prestamo_md))
-prestamo = fuzz.defuzz(x_prestamo,agregar,'centroid')
-print("RESULTADO PARA PROBAR, NO ES LA VERSION FINAL")
-print("EL MONTO A PRESTAR ES DE: S/.",prestamo)
+    if prestamo <= 7500:
+        lblcat.configure(text="BAJO")
+    elif prestamo >7500 and prestamo <= 30000:
+        lblcat.configure(text="MEDIO")
+    elif prestamo > 30000:
+        lblcat.configure(text="ALTO")
+    #Reduce el resultado a 2 decimales
+    lblResp.configure(text=str(round(prestamo,2)))
 
 ventana.mainloop()
