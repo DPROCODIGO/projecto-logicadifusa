@@ -352,7 +352,7 @@ def ingresar_admin():
 
 
 def verDataTable():
-    valores()
+
     table.delete(*table.get_children())
     miConexion = sqlite3.connect("BDPrestamoPersonal")
 
@@ -510,6 +510,8 @@ def limpiarVar():
     micVal3Par2.set("")
     micVal3Par3.set("")
     micVal3Par4.set("")
+    micVal2Par4.set("")
+    
 
 
 def MenuBar():
@@ -1162,7 +1164,7 @@ def fuzzi():
     if prestamo <= 7500:
         lblcat.configure(text="BAJO")
     elif prestamo >7500 and prestamo <= 30000:
-        lblcat.configure(text="MEDIO")
+        lblcat.configure(text="MODERADO")
     elif prestamo > 30000:
         lblcat.configure(text="ALTO")
     #Reduce el resultado a 2 decimales
