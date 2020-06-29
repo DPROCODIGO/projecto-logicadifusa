@@ -2,6 +2,8 @@ import sqlite3
 from tkinter import messagebox
 
 
+global table
+
 def conexionBBDD():
     try:
         miConexion = sqlite3.connect("BDPrestamoPersonal")
@@ -73,21 +75,16 @@ def conexionBBDD():
                 ID_Valor INTEGER PRIMARY KEY AUTOINCREMENT,
                 Nombre VARCHAR(30),
                 Func_Pertenencia VARCHAR(30),
+                Parametro1 INTEGER,
+                Parametro2 INTEGER,
+                Parametro3 INTEGER,
+                Parametro4 INTEGER,
                 ID_Variable INTEGER,
                 FOREIGN KEY (ID_Variable)
                     REFERENCES VARIABLES (ID_Variable)
                 )
             """)
 
-        miCursor.execute("""
-                CREATE TABLE PARAMETROS(
-                ID_Parametro INTEGER PRIMARY KEY AUTOINCREMENT,
-                Valor INTEGER NOT NULL,
-                ID_Valor INTEGER,
-                FOREIGN KEY (ID_Valor)
-                    REFERENCES VALORES_LINGUISTICOS (ID_Valor)
-                )
-            """)
         messagebox.showinfo("BBDD", "La base de datos se ha creado exitosamente")
 
     except:

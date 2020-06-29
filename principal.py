@@ -8,12 +8,11 @@ import skfuzzy as fuzz
 import database
 from tkinter import messagebox
 import sqlite3
-
 import sys
 
 ventana = tk.Tk()
 ventana.title("UDELLA - EVALUADOR DE PRÉSTAMO")
-ventana.iconbitmap("Imagenes\icono.ico")
+ventana.iconbitmap("Imagenes\icono2.ico")
 ventana.geometry("920x600")
 ventana.resizable(False,False)
 ventana.configure(bg=Colors.ColorWhite)
@@ -89,8 +88,11 @@ def switchpass():
         img_verPass.place_forget()
         img_NoverPass['state'] = tk.NORMAL
         img_NoverPass.place(x=575, y=330,height=25)
+        cContraseña['show']="*"
+
 def switchNopass():
     if(img_NoverPass['state'] == tk.NORMAL):
+        cContraseña['show'] = ""
         img_NoverPass.place_forget()
         img_verPass['state'] = tk.NORMAL
         img_verPass.place(x=575, y=330,height=25)
@@ -134,6 +136,46 @@ def buscarCliente():
 
     calcular_edad()
 
+def buscarVar():
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+
+    miCursor.execute("""SELECT VARIABLES.ID_Variable,VARIABLES.Nombre,VARIABLES.Tipo,VALORES_LINGUISTICOS.Nombre,
+        VALORES_LINGUISTICOS.Func_Pertenencia, VALORES_LINGUISTICOS.Parametro1, VALORES_LINGUISTICOS.Parametro2,
+        VALORES_LINGUISTICOS.Parametro3, VALORES_LINGUISTICOS.Parametro4 FROM VALORES_LINGUISTICOS
+        JOIN VARIABLES ON VARIABLES.ID_Variable = VALORES_LINGUISTICOS.ID_Variable
+        WHERE VARIABLES.ID_Variable= """+ cVID.get())
+
+    DatosVar=miCursor.fetchall()
+
+    tup1,tup2,tup3=DatosVar
+
+    micVNombre.set(tup1[1])
+    micVTipo.set(tup1[2])
+    micValor1.set(tup1[3])
+    micBValor1.set(tup1[4])
+    micVal1Par1.set(tup1[5])
+    micVal1Par2.set(tup1[6])
+    micVal1Par3.set(tup1[7])
+    micVal1Par4.set(tup1[8])
+
+    micValor2.set(tup2[3])
+    micBValor2.set(tup2[4])
+    micVal2Par1.set(tup2[5])
+    micVal2Par2.set(tup2[6])
+    micVal2Par3.set(tup2[7])
+    micVal2Par4.set(tup2[8])
+
+    micValor3.set(tup3[3])
+    micBValor3.set(tup3[4])
+    micVal3Par1.set(tup3[5])
+    micVal3Par2.set(tup3[6])
+    micVal3Par3.set(tup3[7])
+    micVal3Par4.set(tup3[8])
+
+    miConexion.commit()
+
 def limpiarEntrys():
     micID.set("")
     micDNI.set("")
@@ -171,12 +213,11 @@ def ingresar_admin():
     close_loginScreen()
     MenuBar()
     global cVID,cVNombre,cVTipo,cValor1, cValor2, cValor3, cValor4,cBValor1,cBValor2,cBValor3,\
-        cVal1Par1,cVal1Par2,cVal1Par3,cVal1Par4,cVal2Par1,cVal2Par2,cVal2Par3,cVal3Par1,cVal3Par2,cVal3Par3,cVal3Par4
-
+        cVal1Par1,cVal1Par2,cVal1Par3,cVal1Par4,cVal2Par1,cVal2Par2,cVal2Par3,cVal2Par4,cVal3Par1,cVal3Par2,cVal3Par3,cVal3Par4
 
     global micVID,micVNombre,micVTipo,micValor1, micValor2, micValor3, micValor4,micBValor1,micBValor2,micBValor3,\
-        micVal1Par1,micVal1Par2,micVal1Par3,micVal1Par4,micVal2Par1,micVal2Par2,micVal2Par3,micVal3Par1,micVal3Par2,\
-        micVal3Par3,micVal3Par4
+        micVal1Par1,micVal1Par2,micVal1Par3,micVal1Par4,micVal2Par1,micVal2Par2,micVal2Par3,micVal2Par4,micVal3Par1,\
+        micVal3Par2,micVal3Par3,micVal3Par4
 
     micVID = tk.StringVar()
     micVNombre = tk.StringVar()
@@ -195,96 +236,257 @@ def ingresar_admin():
     micVal2Par1 = tk.StringVar()
     micVal2Par2 = tk.StringVar()
     micVal2Par3 = tk.StringVar()
+    micVal2Par4 = tk.StringVar()
     micVal3Par1 = tk.StringVar()
     micVal3Par2 = tk.StringVar()
     micVal3Par3 = tk.StringVar()
     micVal3Par4 = tk.StringVar()
 
     lblVariable = tk.Label(ventana, text="VARIABLES", font=font.Font(size=15, weight="bold"), bg="#FFFFFF")
-    lblVariable.place(x=20, y=15)
+    lblVariable.place(x=80, y=15)
 
     lblID = tk.Label(ventana,text="ID:",bg=Colors.ColorWhite)
-    lblID.place(x=25,y=70)
-    cVID=tk.Entry(ventana,textvariable=micVID)
-    cVID.place(x=100,y=70)
+    lblID.place(x=80,y=70)
+    cVID=tk.Entry(ventana,textvariable=micVID,state=tk.NORMAL)
+    cVID.place(x=155,y=70)
     lblNombre = tk.Label(ventana, text="Nombre:",bg=Colors.ColorWhite)
-    lblNombre.place(x=25, y=100)
-    cVNombre = tk.Entry(ventana,textvariable=micVNombre)
-    cVNombre.place(x=100, y=100)
+    lblNombre.place(x=80, y=100)
+    cVNombre = tk.Entry(ventana,textvariable=micVNombre,state=tk.DISABLED)
+    cVNombre.place(x=155, y=100)
     lblTipo = tk.Label(ventana, text="Tipo:",bg=Colors.ColorWhite)
-    lblTipo.place(x=25, y=130)
-    cVTipo = tk.Entry(ventana,textvariable=micVTipo)
-    cVTipo.place(x=100, y=130)
+    lblTipo.place(x=80, y=130)
+    cVTipo = tk.Entry(ventana,textvariable=micVTipo,state=tk.DISABLED)
+    cVTipo.place(x=155, y=130)
 
     lblValorL=tk.Label(ventana,text="Valor \nLinguistico",font=font.Font(size=10,weight="bold"), bg="#FFFFFF")
-    lblValorL.place(x=277,y=28)
+    lblValorL.place(x=325,y=28)
 
     lblValorL = tk.Label(ventana, text="Función de \nPertenencia", font=font.Font(size=10, weight="bold"), bg="#FFFFFF")
-    lblValorL.place(x=377, y=28)
+    lblValorL.place(x=447, y=28)
 
     lblValorL = tk.Label(ventana, text="Parámetros", font=font.Font(size=10, weight="bold"), bg="#FFFFFF")
-    lblValorL.place(x=500, y=34)
+    lblValorL.place(x=600, y=34)
 
-    cValor1 = tk.Entry(ventana,textvariable=micValor1)
-    cValor1.place(x=275, y=70,width=75)
-    cValor2 = tk.Entry(ventana,textvariable=micValor2)
-    cValor2.place(x=275, y=100,width=75)
-    cValor3 = tk.Entry(ventana,textvariable=micValor3)
-    cValor3.place(x=275, y=130,width=75)
+    cValor1 = tk.Entry(ventana,textvariable=micValor1,state=tk.DISABLED)
+    cValor1.place(x=325, y=70,width=75)
+    cValor2 = tk.Entry(ventana,textvariable=micValor2,state=tk.DISABLED)
+    cValor2.place(x=325, y=100,width=75)
+    cValor3 = tk.Entry(ventana,textvariable=micValor3,state=tk.DISABLED)
+    cValor3.place(x=325, y=130,width=75)
 
-    cBValor1=ttk.Combobox(state="readonly",textvariable=micBValor1)
-    cBValor1["values"]=["Triangular","Trapezoidal"]
-    cBValor1.place(x=375,y=70,width=100)
+    cBValor1 = ttk.Combobox(state=tk.DISABLED,textvariable=micBValor1)
+    cBValor1["values"]=["TRIANGULAR","TRAPEZOIDAL"]
+    cBValor1.place(x=445,y=70,width=100)
 
-    cBValor2 = ttk.Combobox(state="readonly",textvariable=micBValor2)
-    cBValor2["values"] = ["Triangular", "Trapezoidal"]
-    cBValor2.place(x=375, y=100,width=100)
+    #readonly
+    cBValor2 = ttk.Combobox(state=tk.DISABLED,textvariable=micBValor2)
+    cBValor2["values"] = ["TRIANGULAR","TRAPEZOIDAL"]
+    cBValor2.place(x=445, y=100,width=100)
 
-    cBValor3 = ttk.Combobox(state="readonly",textvariable=micBValor3)
-    cBValor3["values"] = ["Triangular", "Trapezoidal"]
-    cBValor3.place(x=375, y=130,width=100)
+    cBValor3 = ttk.Combobox(state=tk.DISABLED,textvariable=micBValor3)
+    cBValor3["values"] = ["TRIANGULAR","TRAPEZOIDAL"]
+    cBValor3.place(x=445, y=130,width=100)
 
-    cVal1Par1 = tk.Entry(ventana,textvariable=micVal1Par1)
-    cVal1Par1.place(x=500, y=70, width=30)
-    cVal1Par2 = tk.Entry(ventana,textvariable=micVal1Par2)
-    cVal1Par2.place(x=540, y=70, width=30)
-    cVal1Par3 = tk.Entry(ventana,textvariable=micVal1Par3)
-    cVal1Par3.place(x=580, y=70, width=30)
-    cVal1Par4 = tk.Entry(ventana,textvariable=micVal1Par4)
-    cVal1Par4.place(x=620, y=70, width=30)
+    cVal1Par1 = tk.Entry(ventana,textvariable=micVal1Par1,state=tk.DISABLED)
+    cVal1Par1.place(x=600, y=70, width=50)
+    cVal1Par2 = tk.Entry(ventana,textvariable=micVal1Par2,state=tk.DISABLED)
+    cVal1Par2.place(x=660, y=70, width=50)
+    cVal1Par3 = tk.Entry(ventana,textvariable=micVal1Par3,state=tk.DISABLED)
+    cVal1Par3.place(x=720, y=70, width=50)
+    cVal1Par4 = tk.Entry(ventana,textvariable=micVal1Par4,state=tk.DISABLED)
+    cVal1Par4.place(x=780, y=70, width=50)
 
-    cVal2Par1 = tk.Entry(ventana,textvariable=micVal2Par1)
-    cVal2Par1.place(x=500, y=100, width=30)
-    cVal2Par2 = tk.Entry(ventana,textvariable=micVal2Par2)
-    cVal2Par2.place(x=540, y=100, width=30)
-    cVal2Par3 = tk.Entry(ventana,textvariable=micVal2Par3)
-    cVal2Par3.place(x=580, y=100, width=30)
+    cVal2Par1 = tk.Entry(ventana,textvariable=micVal2Par1,state=tk.DISABLED)
+    cVal2Par1.place(x=600, y=100, width=50)
+    cVal2Par2 = tk.Entry(ventana,textvariable=micVal2Par2,state=tk.DISABLED)
+    cVal2Par2.place(x=660, y=100, width=50)
+    cVal2Par3 = tk.Entry(ventana,textvariable=micVal2Par3,state=tk.DISABLED)
+    cVal2Par3.place(x=720, y=100, width=50)
+    cVal2Par4 = tk.Entry(ventana, textvariable=micVal2Par4,state=tk.DISABLED)
+    cVal2Par4.place(x=780, y=100, width=50)
 
-    cVal3Par1 = tk.Entry(ventana,textvariable=micVal3Par1)
-    cVal3Par1.place(x=500, y=130, width=30)
-    cVal3Par2 = tk.Entry(ventana,textvariable=micVal3Par2)
-    cVal3Par2.place(x=540, y=130, width=30)
-    cVal3Par3 = tk.Entry(ventana,textvariable=micVal3Par3)
-    cVal3Par3.place(x=580, y=130, width=30)
-    cVal3Par4 = tk.Entry(ventana,textvariable=micVal3Par4)
-    cVal3Par4.place(x=620, y=130, width=30)
+    cVal3Par1 = tk.Entry(ventana,textvariable=micVal3Par1,state=tk.DISABLED)
+    cVal3Par1.place(x=600, y=130, width=50)
+    cVal3Par2 = tk.Entry(ventana,textvariable=micVal3Par2,state=tk.DISABLED)
+    cVal3Par2.place(x=660, y=130, width=50)
+    cVal3Par3 = tk.Entry(ventana,textvariable=micVal3Par3,state=tk.DISABLED)
+    cVal3Par3.place(x=720, y=130, width=50)
+    cVal3Par4 = tk.Entry(ventana,textvariable=micVal3Par4,state=tk.DISABLED)
+    cVal3Par4.place(x=780, y=130, width=50)
 
-
-    bBuscar = tk.Button(ventana, text="BUSCCAR",image=Buscar23, compound="left",bg=Colors.ColorSecundary,
-                         font=font.Font(size=10,weight="bold"),activebackground=Colors.ColorSecundary)
-    bBuscar.place(x=725, y=70,width=110,height=25)
+    bBuscar = tk.Button(ventana, text="BUSCAR", image=Buscar23, compound="left", bg=Colors.ColorSecundary,
+                        font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                        command=buscarVar)
+    bBuscar.place(x=80, y=190, width=110, height=25)
 
     bModificar=tk.Button(ventana,text="MODIFICAR",image=Modificar23, compound="left",bg=Colors.ColorSecundary,
-                         font=font.Font(size=10,weight="bold"),activebackground=Colors.ColorSecundary)
-    bModificar.place(x=725,y=100,width=110,height=25)
+                         font=font.Font(size=10,weight="bold"),activebackground=Colors.ColorSecundary,command=modificarVar)
+    bModificar.place(x=237.5,y=190,width=110,height=25)
 
     bLimpiar=tk.Button(ventana,text="BORRAR",image=Borrar23, compound="left",bg=Colors.ColorSecundary,
                          font=font.Font(size=10,weight="bold"),activebackground=Colors.ColorSecundary,command=limpiarVar)
-    bLimpiar.place(x=725,y=130,width=110,height=25)
+    bLimpiar.place(x=395,y=190,width=110,height=25)
+
+    bGuardar = tk.Button(ventana, text="GUARDAR", image=Guardar23, compound="left", bg=Colors.ColorSecundary,
+                         font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                         command=guardarVar)
+    bGuardar.place(x=552.5, y=190, width=110, height=25)
+
+    bActualizar = tk.Button(ventana, text="ACTUALIZAR", image=Actualizar23, compound="left", bg=Colors.ColorSecundary,
+                         font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                         command=verDataTable)
+    bActualizar.place(x=710, y=190, width=120, height=25)
+
+    global table
+    table = ttk.Treeview(column=("ID", "Variable", "Tipo", "Valor", "Función de Pertenencia", "Parametro1","Parametro2","Parametro3","Parametro4",),show='headings')
+    table.heading("ID", text="ID")
+    table.heading("Variable", text="Variable")
+    table.heading("Tipo", text="Tipo")
+    table.heading("Valor", text="Valor")
+    table.heading("Función de Pertenencia", text="Función de Pertenencia")
+    table.heading("Parametro1", text="Parametro1")
+    table.heading("Parametro2", text="Parametro2")
+    table.heading("Parametro3", text="Parametro3")
+    table.heading("Parametro4", text="Parametro4")
+    table.place(x=10,y=250, width=900, height=330)
 
 
-    lblPanelA = tk.Label(ventana, width=127, height=22, borderwidth=1, relief="sunken", bg="#FFFFFF")
-    lblPanelA.place(x=10, y=250)
+def verDataTable():
+    valores()
+    table.delete(*table.get_children())
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+    miCursor.execute("""SELECT VARIABLES.ID_Variable,VARIABLES.Nombre,VARIABLES.Tipo,VALORES_LINGUISTICOS.Nombre,
+    VALORES_LINGUISTICOS.Func_Pertenencia, VALORES_LINGUISTICOS.Parametro1, VALORES_LINGUISTICOS.Parametro2,
+    VALORES_LINGUISTICOS.Parametro3, VALORES_LINGUISTICOS.Parametro4 FROM VALORES_LINGUISTICOS
+    JOIN VARIABLES ON VARIABLES.ID_Variable = VALORES_LINGUISTICOS.ID_Variable""")
+    for row in miCursor:
+        disp=('{0} {1} {2} {3} {4} {5} {6} {7} {8}'.format(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8]))
+        table.insert("",tk.END,values=disp)
+
+def dataVarPar():
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+
+    miCursor.execute("""SELECT VARIABLES.ID_Variable, VALORES_LINGUISTICOS.ID_Valor FROM VALORES_LINGUISTICOS
+            JOIN VARIABLES ON VARIABLES.ID_Variable = VALORES_LINGUISTICOS.ID_Variable
+            WHERE VARIABLES.ID_Variable= """+cVID.get())
+
+    Datos=miCursor.fetchall()
+    IDVar1,IDVar2,IDVar3=Datos
+
+    global IDValLin1,IDValLin2,IDValLin3
+    IDValLin1=IDVar1[1]
+    IDValLin2=IDVar2[1]
+    IDValLin3=IDVar3[1]
+
+    miConexion.commit()
+
+def valores():
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+
+    miCursor.execute("""SELECT VARIABLES.ID_Variable, VALORES_LINGUISTICOS.ID_Valor,VALORES_LINGUISTICOS.Parametro1,
+                VALORES_LINGUISTICOS.Parametro2,VALORES_LINGUISTICOS.Parametro3,VALORES_LINGUISTICOS.Parametro4
+                FROM VALORES_LINGUISTICOS
+                JOIN VARIABLES ON VARIABLES.ID_Variable = VALORES_LINGUISTICOS.ID_Variable
+                WHERE VARIABLES.ID_Variable= """ + cVID.get())
+
+    dataVariables=miCursor.fetchall()
+    print(dataVariables)
+    miConexion.commit()
+
+def guardarVar():
+    dataVarPar()
+
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+
+    miCursor.execute("UPDATE VARIABLES SET Nombre='"+cVNombre.get()+
+                     "',Tipo='"+cVTipo.get()+
+                     "'WHERE ID_Variable="+cVID.get())
+
+    miCursor.execute("UPDATE VALORES_LINGUISTICOS SET Nombre='" + cValor1.get() +
+                     "',Func_Pertenencia='"+cBValor1.get()+
+                     "',Parametro1='" + cVal1Par1.get() +
+                     "',Parametro2='" + cVal1Par2.get() +
+                     "',Parametro3='" + cVal1Par3.get() +
+                     "',Parametro4='" + cVal1Par4.get() +
+                     "'WHERE ID_Valor='"+ str(IDValLin1) + "' AND ID_Variable=" + cVID.get())
+    miCursor.execute("UPDATE VALORES_LINGUISTICOS SET Nombre='" + cValor2.get() +
+                     "',Func_Pertenencia='" + cBValor2.get() +
+                     "',Parametro1='" + cVal2Par1.get() +
+                     "',Parametro2='" + cVal2Par2.get() +
+                     "',Parametro3='" + cVal2Par3.get() +
+                     "',Parametro4='" + cVal2Par4.get() +
+                     "'WHERE ID_Valor='" + str(IDValLin2) + "' AND ID_Variable=" + cVID.get())
+    miCursor.execute("UPDATE VALORES_LINGUISTICOS SET Nombre='" + cValor3.get() +
+                     "',Func_Pertenencia='" + cBValor3.get() +
+                     "',Parametro1='" + cVal3Par1.get() +
+                     "',Parametro2='" + cVal3Par2.get() +
+                     "',Parametro3='" + cVal3Par3.get() +
+                     "',Parametro4='" + cVal3Par4.get() +
+                     "'WHERE ID_Valor='" + str(IDValLin3) + "' AND ID_Variable=" + cVID.get())
+    messagebox.showinfo("DB","LOS DATOS SE GUARDARON CORRECTAMENTE")
+    miConexion.commit()
+    bloqVar()
+    
+def modificarVar():
+
+    cVNombre['state'] = tk.NORMAL
+    cVTipo['state'] = tk.NORMAL
+    cValor1['state'] = tk.NORMAL
+    cValor2['state'] = tk.NORMAL
+    cValor3['state'] = tk.NORMAL
+
+    cBValor1['state'] = "readonly"
+    cBValor2['state'] = "readonly"
+    cBValor3['state'] = "readonly"
+
+    cVal1Par1['state'] = tk.NORMAL
+    cVal1Par2['state'] = tk.NORMAL
+    cVal1Par3['state'] = tk.NORMAL
+    cVal1Par4['state'] = tk.NORMAL
+
+    cVal2Par1['state'] = tk.NORMAL
+    cVal2Par2['state'] = tk.NORMAL
+    cVal2Par3['state'] = tk.NORMAL
+    cVal2Par4['state'] = tk.NORMAL
+
+    cVal3Par1['state'] = tk.NORMAL
+    cVal3Par2['state'] = tk.NORMAL
+    cVal3Par3['state'] = tk.NORMAL
+    cVal3Par4['state'] = tk.NORMAL
+
+def bloqVar():
+    cVNombre['state'] = tk.DISABLED
+    cVTipo['state'] = tk.DISABLED
+    cValor1['state'] = tk.DISABLED
+    cValor2['state'] = tk.DISABLED
+    cValor3['state'] = tk.DISABLED
+
+    cBValor1['state'] = tk.DISABLED
+    cBValor2['state'] = tk.DISABLED
+    cBValor3['state'] = tk.DISABLED
+
+    cVal1Par1['state'] = tk.DISABLED
+    cVal1Par2['state'] = tk.DISABLED
+    cVal1Par3['state'] = tk.DISABLED
+    cVal1Par4['state'] = tk.DISABLED
+
+    cVal2Par1['state'] = tk.DISABLED
+    cVal2Par2['state'] = tk.DISABLED
+    cVal2Par3['state'] = tk.DISABLED
+    cVal2Par4['state'] = tk.DISABLED
+
+    cVal3Par1['state'] = tk.DISABLED
+    cVal3Par2['state'] = tk.DISABLED
+    cVal3Par3['state'] = tk.DISABLED
+    cVal3Par4['state'] = tk.DISABLED
 
 def limpiarVar():
     micVID.set("")
@@ -358,6 +560,8 @@ RutaBorrar="Imagenes\img_borrar.png"
 RutaBorrar23="Imagenes\img_borrar23.png"
 RutaModificar23="Imagenes\img_modificar23.png"
 RutaBuscar23="Imagenes\img_buscar23.png"
+RutaGuardar23="Imagenes\img_guardar23.png"
+RutaActualizar23="Imagenes\img_actualizar23.png"
 RutaUsuario="Imagenes\img_usuario.png"
 RutaContraseña="Imagenes\img_contraseña.png"
 RutaVerPass="Imagenes\img_ver_pass.png"
@@ -371,6 +575,8 @@ Borrar =PhotoImage(file=RutaBorrar)
 Borrar23 =PhotoImage(file=RutaBorrar23)
 Modificar23 =PhotoImage(file=RutaModificar23)
 Buscar23 =PhotoImage(file=RutaBuscar23)
+Guardar23 =PhotoImage(file=RutaGuardar23)
+Actualizar23 =PhotoImage(file=RutaActualizar23)
 Usuario =PhotoImage(file=RutaUsuario)
 Contraseña =PhotoImage(file=RutaContraseña)
 VerPass =PhotoImage(file=RutaVerPass)
@@ -488,7 +694,7 @@ def varEntradas():
     bEvaluar = tk.Button(ventana, bg=Colors.ColorSecundary, text="EVALUAR", font=comp, command=evaluar_prest)
     bEvaluar.configure(relief=tk.GROOVE, background=Colors.ColorSecundary, activebackground=Colors.ColorSecundaryDark)
     bEvaluar.place(x=120,y=550)
-    panel_evaluacion()
+
 
 def panel_evaluacion():
 
@@ -710,6 +916,7 @@ bPrestamo.configure(relief=tk.GROOVE, background=Colors.ColorSalida, activebackg
 
 #SKFUZZY
 
+
 #Reglas
 # Rango de la calidad de la edad (años)
 x_edad = np.arange(20, 65, 1)
@@ -903,6 +1110,7 @@ def grafPrestamo():
     toolbar.update()
 
 def evaluar_prest():
+    panel_evaluacion()
     global edad, ingreso, cap_pago, tiempo, hijos, deudas
     edad = cEdad.get()
     ingreso = cIngreso.get()
