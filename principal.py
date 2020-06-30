@@ -323,7 +323,7 @@ def ingresar_admin():
                          font=font.Font(size=10,weight="bold"),activebackground=Colors.ColorSecundary,command=modificarVar)
     bModificar.place(x=237.5,y=190,width=110,height=25)
 
-    bLimpiar=tk.Button(ventana,text="BORRAR",image=Borrar23, compound="left",bg=Colors.ColorSecundary,
+    bLimpiar=tk.Button(ventana,text="LIMPIAR",image=Borrar23, compound="left",bg=Colors.ColorSecundary,
                          font=font.Font(size=10,weight="bold"),activebackground=Colors.ColorSecundary,command=limpiarVar)
     bLimpiar.place(x=395,y=190,width=110,height=25)
 
@@ -511,7 +511,7 @@ def limpiarVar():
     micVal3Par3.set("")
     micVal3Par4.set("")
     micVal2Par4.set("")
-    
+
 
 
 def MenuBar():
@@ -651,7 +651,7 @@ def varEntradas():
                          font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,command=crearCliente)
     bAgregar.place(x=40, y=305, height=30)
 
-    bBorrar = tk.Button(ventana, text="BORRAR",image=Borrar, compound="left",bg=Colors.ColorSecundary,
+    bBorrar = tk.Button(ventana, text="LIMPIAR",image=Borrar, compound="left",bg=Colors.ColorSecundary,
                          font=font.Font(size=10,weight="bold"),activebackground=Colors.ColorSecundary,command=limpiarEntrys)
     bBorrar.place(x=180, y=305,height=30)
 
