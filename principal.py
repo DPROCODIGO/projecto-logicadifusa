@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, font, Label, PhotoImage, VERTICAL
 import matplotlib.pyplot as plt
+from skfuzzy.control.visualization import ControlSystemVisualizer
+
 from Values import Colors
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import numpy as np
@@ -205,6 +207,7 @@ def mostrar_variables():
     var1val1 = var1[0]
     var1val2 = var2[0]
     var1val3 = var3[0]
+
     global var2val1, var2val2, var2val3
     var2val1 = var4[0]
     var2val2 = var5[0]
@@ -225,6 +228,7 @@ def mostrar_variables():
     var6val1 = var16[0]
     var6val2 = var17[0]
     var6val3 = var18[0]
+
 
     #OBTENCION DE PARAMETROS
     # Variable 1 - Valor Linguistico 1
@@ -408,6 +412,8 @@ def cerrar_sesion():
 def ingresar_admin():
     close_loginScreen()
     MenuBar()
+
+def variables_screen():
     global cVID, cVNombre, cVTipo, cValor1, cValor2, cValor3, cBValor1, cBValor2, cBValor3, \
         cVal1Par1, cVal1Par2, cVal1Par3, cVal1Par4, cVal2Par1, cVal2Par2, cVal2Par3, cVal2Par4, cVal3Par1, cVal3Par2, cVal3Par3, cVal3Par4
 
@@ -438,6 +444,7 @@ def ingresar_admin():
     micVal3Par3 = tk.StringVar()
     micVal3Par4 = tk.StringVar()
 
+    global lblVariable, lblID, lblNombre, lblTipo, lblValorL, lblFunPer, lblPar
     lblVariable = tk.Label(ventana, text="VARIABLES", font=font.Font(size=15, weight="bold"), bg="#FFFFFF")
     lblVariable.place(x=80, y=15)
 
@@ -457,11 +464,11 @@ def ingresar_admin():
     lblValorL = tk.Label(ventana, text="Valor \nLinguistico", font=font.Font(size=10, weight="bold"), bg="#FFFFFF")
     lblValorL.place(x=325, y=28)
 
-    lblValorL = tk.Label(ventana, text="Función de \nPertenencia", font=font.Font(size=10, weight="bold"), bg="#FFFFFF")
-    lblValorL.place(x=447, y=28)
+    lblFunPer = tk.Label(ventana, text="Función de \nPertenencia", font=font.Font(size=10, weight="bold"), bg="#FFFFFF")
+    lblFunPer.place(x=447, y=28)
 
-    lblValorL = tk.Label(ventana, text="Parámetros", font=font.Font(size=10, weight="bold"), bg="#FFFFFF")
-    lblValorL.place(x=600, y=34)
+    lblPar = tk.Label(ventana, text="Parámetros", font=font.Font(size=10, weight="bold"), bg="#FFFFFF")
+    lblPar.place(x=600, y=34)
 
     cValor1 = tk.Entry(ventana, textvariable=micValor1, state=tk.DISABLED)
     cValor1.place(x=325, y=70, width=75)
@@ -551,7 +558,6 @@ def ingresar_admin():
     table.heading("Parametro4", text="Parametro4")
     table.place(x=10, y=250, width=900, height=330)
 
-
 def verDataTable():
     table.delete(*table.get_children())
     miConexion = sqlite3.connect("BDPrestamoPersonal")
@@ -578,6 +584,7 @@ def dataVarPar():
             WHERE VARIABLES.ID_Variable= """ + cVID.get())
 
     Datos = miCursor.fetchall()
+    print(Datos)
     IDVar1, IDVar2, IDVar3 = Datos
 
     global IDValLin1, IDValLin2, IDValLin3
@@ -719,15 +726,15 @@ def MenuBar():
     helpmenu.add_command(label="Acerca de...")
 
     variablemenu = tk.Menu(BarraMenu, tearoff=0)
-    variablemenu.add_command(label="Variable de entrada")
-    variablemenu.add_command(label="Variable de salida")
+    variablemenu.add_command(label="Configuracion", command=abVar_crReg)
 
     reglamenu = tk.Menu(BarraMenu, tearoff=0)
-    reglamenu.add_command(label="Visualizar")
+    reglamenu.add_command(label="Configuracion",command=abReg_crVar)
 
     BarraMenu.add_cascade(label="Cuenta", menu=sesionmenu)
     BarraMenu.add_cascade(label="Variable", menu=variablemenu)
     BarraMenu.add_cascade(label="Reglas", menu=reglamenu)
+    BarraMenu.add_cascade(label="Personal", menu=helpmenu)
     BarraMenu.add_cascade(label="Ayuda", menu=helpmenu)
 
 
@@ -1124,10 +1131,295 @@ bPrestamo = tk.Button(ventana, bg=Colors.ColorSecundary, text="PRÉSTAMO", state
                       font=SVar)
 bPrestamo.configure(relief=tk.GROOVE, background=Colors.ColorSalida, activebackground=Colors.ColorSalidaDark)
 
+
+def reglas_screen():
+    global crID, crCondicion1, crCondicion2, crCondicion3, crCondicion4, crCondicion5, crCondicion6, crRegla
+    global mirID, mirCondicion1, mirCondicion2, mirCondicion3, mirCondicion4, mirCondicion5, mirCondicion6, mirRegla
+
+    mirID = tk.StringVar()
+    mirCondicion1 = tk.StringVar()
+    mirCondicion2 = tk.StringVar()
+    mirCondicion3 = tk.StringVar()
+    mirCondicion4 = tk.StringVar()
+    mirCondicion5 = tk.StringVar()
+    mirCondicion6 = tk.StringVar()
+    mirRegla = tk.StringVar()
+    global lblReglas,lblrID,lblrRegla,lblc1,lblc2,lblc3,lblc4,lblc5,lblc6
+    lblReglas = tk.Label(ventana, text="REGLAS", font=font.Font(size=15, weight="bold"), bg="#FFFFFF")
+    lblReglas.place(x=80, y=15)
+
+    lblrID = tk.Label(ventana, text="ID:", bg=Colors.ColorWhite)
+    lblrID.place(x=80, y=70)
+    crID = tk.Entry(ventana, textvariable=mirID, state=tk.NORMAL)
+    crID.place(x=155, y=70, width=75)
+    lblrRegla = tk.Label(ventana, text="Regla:", bg=Colors.ColorWhite)
+    lblrRegla.place(x=80, y=100)
+    crRegla = tk.Entry(ventana, textvariable=mirRegla, state=tk.DISABLED)
+    crRegla.place(x=155, y=100, width=75)
+
+    lblc1 = tk.Label(ventana, text="Condicion 1:", bg=Colors.ColorWhite)
+    lblc1.place(x=275, y=70)
+    crCondicion1 = tk.Entry(ventana, textvariable=mirCondicion1, state=tk.DISABLED)
+    crCondicion1.place(x=350, y=70, width=75)
+    lblc2 = tk.Label(ventana, text="Condicion 2:", bg=Colors.ColorWhite)
+    lblc2.place(x=275, y=100)
+    crCondicion2 = tk.Entry(ventana, textvariable=mirCondicion2, state=tk.DISABLED)
+    crCondicion2.place(x=350, y=100, width=75)
+
+    lblc3 = tk.Label(ventana, text="Condicion 3:", bg=Colors.ColorWhite)
+    lblc3.place(x=475, y=70)
+    crCondicion3 = tk.Entry(ventana, textvariable=mirCondicion4, state=tk.DISABLED)
+    crCondicion3.place(x=550, y=70, width=75)
+    lblc4 = tk.Label(ventana, text="Condicion 4:", bg=Colors.ColorWhite)
+    lblc4.place(x=475, y=100)
+    crCondicion4 = tk.Entry(ventana, textvariable=mirCondicion4, state=tk.DISABLED)
+    crCondicion4.place(x=550, y=100, width=75)
+
+    lblc5 = tk.Label(ventana, text="Condicion 5:", bg=Colors.ColorWhite)
+    lblc5.place(x=675, y=70)
+    crCondicion5 = tk.Entry(ventana, textvariable=mirCondicion5, state=tk.DISABLED)
+    crCondicion5.place(x=750, y=70, width=75)
+    lblc6 = tk.Label(ventana, text="Condicion 6:", bg=Colors.ColorWhite)
+    lblc6.place(x=675, y=100)
+    crCondicion6 = tk.Entry(ventana, textvariable=mirCondicion6, state=tk.DISABLED)
+    crCondicion6.place(x=750, y=100, width=75)
+
+    #BOTONES
+    global brBuscar, brModificar, brLimpiar, brGuardar, brActualizar
+    brBuscar = tk.Button(ventana, text="BUSCAR", image=Buscar23, compound="left", bg=Colors.ColorSecundary,
+                        font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                        command=buscarReglas)
+    brBuscar.place(x=80, y=190, width=110, height=25)
+
+    brModificar = tk.Button(ventana, text="MODIFICAR", image=Modificar23, compound="left", bg=Colors.ColorSecundary,
+                           font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                           command=modificarReg)
+    brModificar.place(x=237.5, y=190, width=110, height=25)
+
+    brLimpiar = tk.Button(ventana, text="LIMPIAR", image=Borrar23, compound="left", bg=Colors.ColorSecundary,
+                         font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                         command=limpiarReglas)
+    brLimpiar.place(x=395, y=190, width=110, height=25)
+
+    brGuardar = tk.Button(ventana, text="GUARDAR", image=Guardar23, compound="left", bg=Colors.ColorSecundary,
+                         font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                         command=guardarReg)
+    brGuardar.place(x=552.5, y=190, width=110, height=25)
+
+    brActualizar = tk.Button(ventana, text="ACTUALIZAR", image=Actualizar23, compound="left", bg=Colors.ColorSecundary,
+                            font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                            command=verTablaReglas)
+    brActualizar.place(x=710, y=190, width=120, height=25)
+
+    #TABLA DE REGLAS
+    global tabla_regla
+    tabla_regla = ttk.Treeview(column=(
+    "ID_Regla", "Condicion1", "Condicion2", "Condicion3", "Condicion4", "Condicion5", "Condicion6", "Regla"), show='headings')
+    tabla_regla.heading("ID_Regla", text="ID_Regla")
+    tabla_regla.heading("Condicion1", text="Condicion1")
+    tabla_regla.heading("Condicion2", text="Condicion2")
+    tabla_regla.heading("Condicion3", text="Condicion3")
+    tabla_regla.heading("Condicion4", text="Condicion4")
+    tabla_regla.heading("Condicion5", text="Condicion5")
+    tabla_regla.heading("Condicion6", text="Condicion6")
+    tabla_regla.heading("Regla", text="Regla")
+    tabla_regla.place(x=10, y=250, width=900, height=330)
+
+def verTablaReglas():
+    tabla_regla.delete(*tabla_regla.get_children())
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+    miCursor.execute("""SELECT REGLAS.ID_Regla,REGLAS.Condicion1,REGLAS.Condicion2,REGLAS.Condicion3,REGLAS.Condicion4,
+        REGLAS.Condicion5, REGLAS.Condicion6, REGLAS.Regla FROM REGLAS""")
+    for row in miCursor:
+        reglas = (
+            '{0} {1} {2} {3} {4} {5} {6} {7}'.format(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7],))
+        tabla_regla.insert("", tk.END, values=reglas)
+
+    miConexion.commit()
+
+def buscarReglas():
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+
+    miCursor.execute("""SELECT ID_Regla, Condicion1, Condicion2, Condicion3, Condicion4, Condicion5, Condicion6, Regla FROM REGLAS
+        WHERE ID_Regla= """ + crID.get())
+
+    datosRegla = miCursor.fetchall()
+    lista,*asaw=datosRegla
+    mirCondicion1.set(lista[1])
+    mirCondicion2.set(lista[2])
+    mirCondicion3.set(lista[3])
+    mirCondicion4.set(lista[4])
+    mirCondicion5.set(lista[5])
+    mirCondicion6.set(lista[6])
+    mirRegla.set(lista[7])
+
+    miConexion.commit()
+
+
+def limpiarReglas():
+    mirID.set("")
+    mirCondicion1.set("")
+    mirCondicion2.set("")
+    mirCondicion3.set("")
+    mirCondicion4.set("")
+    mirCondicion5.set("")
+    mirCondicion6.set("")
+    mirRegla.set("")
+
+def modificarReg():
+    crCondicion1['state'] = tk.NORMAL
+    crCondicion2['state'] = tk.NORMAL
+    crCondicion3['state'] = tk.NORMAL
+    crCondicion4['state'] = tk.NORMAL
+    crCondicion5['state'] = tk.NORMAL
+    crCondicion6['state'] = tk.NORMAL
+    crRegla['state'] = tk.NORMAL
+
+def bloqReg():
+    crCondicion1['state'] = tk.DISABLED
+    crCondicion2['state'] = tk.DISABLED
+    crCondicion3['state'] = tk.DISABLED
+    crCondicion4['state'] = tk.DISABLED
+    crCondicion5['state'] = tk.DISABLED
+    crCondicion6['state'] = tk.DISABLED
+    crRegla['state'] = tk.DISABLED
+
+def guardarReg():
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+
+    miCursor.execute("UPDATE REGLAS SET Condicion1='" + crCondicion1.get() +
+                     "',Condicion2='" + crCondicion2.get() +
+                     "',Condicion3='" + crCondicion3.get() +
+                     "',Condicion4='" + crCondicion4.get() +
+                     "',Condicion5='" + crCondicion5.get() +
+                     "',Condicion6='" + crCondicion6.get() +
+                     "',Regla='" + crRegla.get() +
+                     "'WHERE ID_Regla=" + crID.get())
+
+    messagebox.showinfo("DB", "LOS DATOS SE GUARDARON CORRECTAMENTE")
+    miConexion.commit()
+    bloqReg()
+
+def abVar_crReg():
+    cerrar_reglas()
+    variables_screen()
+
+def abReg_crVar():
+    reglas_screen()
+    cerrar_variables()
+
+def cerrar_variables():
+    cVID.place_forget()
+    cVNombre.place_forget()
+    cVTipo.place_forget()
+    cValor1.place_forget()
+    cValor2.place_forget()
+    cValor3.place_forget()
+    cBValor1.place_forget()
+    cBValor2.place_forget()
+    cBValor3.place_forget()
+    cVal1Par1.place_forget()
+    cVal1Par2.place_forget()
+    cVal1Par3.place_forget()
+    cVal1Par4.place_forget()
+    cVal2Par1.place_forget()
+    cVal2Par2.place_forget()
+    cVal2Par3.place_forget()
+    cVal2Par4.place_forget()
+    cVal3Par1.place_forget()
+    cVal3Par2.place_forget()
+    cVal3Par3.place_forget()
+    cVal3Par4.place_forget()
+
+    lblVariable.place_forget()
+    cVal3Par1.place_forget()
+    lblVariable.place_forget()
+    lblID.place_forget()
+    lblNombre.place_forget()
+    lblTipo.place_forget()
+    lblValorL.place_forget()
+    lblFunPer.place_forget()
+    lblPar.place_forget()
+
+    bBuscar.place_forget()
+    bModificar.place_forget()
+    bLimpiar.place_forget()
+    bGuardar.place_forget()
+    bActualizar.place_forget()
+
+    table.place_forget()
+
+def cerrar_reglas():
+    crID.place_forget()
+    crCondicion1.place_forget()
+    crCondicion2.place_forget()
+    crCondicion3.place_forget()
+    crCondicion4.place_forget()
+    crCondicion5.place_forget()
+    crCondicion6.place_forget()
+    crRegla.place_forget()
+
+    lblReglas.place_forget()
+    lblrID.place_forget()
+    lblrRegla.place_forget()
+    lblc1.place_forget()
+    lblc2.place_forget()
+    lblc3.place_forget()
+    lblc4.place_forget()
+    lblc5.place_forget()
+    lblc6.place_forget()
+
+    brBuscar.place_forget()
+    brModificar.place_forget()
+    brLimpiar.place_forget()
+    brGuardar.place_forget()
+    brActualizar.place_forget()
+    tabla_regla.place_forget()
+
+def mostrar_reglas():
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+
+    miCursor.execute("""SELECT ID_Regla, Condicion1, Condicion2, Condicion3, Condicion4, Condicion5, Condicion6, Regla FROM REGLAS
+                    WHERE ID_Regla=6""")
+
+    ex_reglas=miCursor.fetchall()
+    l_reglas,*nada=ex_reglas
+
+    global idr,c1,c2,c3,c4,c5,c6,regla_out
+    idr=l_reglas[0]
+    c1=l_reglas[1]
+    c2=l_reglas[2]
+    c3=l_reglas[3]
+    c4=l_reglas[4]
+    c5=l_reglas[5]
+    c6=l_reglas[6]
+    regla_out=l_reglas[7]
+    print(c1,c2,c3,c4,c5,c6)
+
+mostrar_reglas()
+
+def obtener_variablesC():
+    global variable1,variable2,variable3,variable4,variable5,variable6
+    variable1 = cVar1.get()
+    variable2 = cVar2.get()
+    variable3 = cVar3.get()
+    variable4 = cVar4.get()
+    variable5 = cVar5.get()
+    variable6 = cVar6.get()
+
+
+
 # SKFUZZY
 
-# Reglas
-
+# DEFINICION DE UNIVERSO
 # Rango de la calidad del ingresos (soles)
 x_variable1 = np.arange(v1val1Par1, v1val3Par4, 1)
 
@@ -1149,6 +1441,14 @@ x_variable6 = np.arange(v6val1Par1, v6val3Par3, 1)
 # Rango del porcentaje de préstamo (soles)
 x_prestamo = np.arange(500, 50000, 1)
 
+#CREACION DE VARIABLES DE ENTRADA(ANTECEDENT) y SALIDA(CONSEQUENT)
+var1=ctrl.Antecedent(x_variable1, NVariable1)
+var2=ctrl.Antecedent(x_variable2, NVariable2)
+var3=ctrl.Antecedent(x_variable3, NVariable3)
+var4=ctrl.Antecedent(x_variable4, NVariable4)
+var5=ctrl.Antecedent(x_variable5, NVariable5)
+var6=ctrl.Antecedent(x_variable6, NVariable6)
+prestamo=ctrl.Consequent(x_prestamo,'prestamo')
 
 # Ingreso Bajo
 v1_val1 = fuzz.trapmf(x_variable1, [v1val1Par1, v1val1Par2, v1val1Par3, v1val1Par4])
@@ -1157,64 +1457,10 @@ v1_val2 = fuzz.trimf(x_variable1, [v1val2Par1, v1val2Par2, v1val2Par3])
 # Ingreso Alto
 v1_val3 = fuzz.trapmf(x_variable1, [v1val3Par1, v1val3Par2, v1val3Par3, v1val3Par4])
 
-# CapPago Bajo
-v2_val1 = fuzz.trapmf(x_variable2, [v2val1Par1, v2val1Par2, v2val1Par3, v2val1Par4])
-# CapPago Medio
-v2_val2 = fuzz.trimf(x_variable2, [v2val2Par1, v2val2Par2, v2val2Par3])
-# CapPago Alto
-v2_val3 = fuzz.trapmf(x_variable2, [v2val3Par1, v2val3Par2, v2val3Par3, v2val3Par4])
-
-# Edad Joven
-v3_val1 = fuzz.trapmf(x_variable3, [v3val1Par1, v3val1Par2, v3val1Par3, v3val1Par4])
-# Edad Adulta
-v3_val2 = fuzz.trimf(x_variable3, [v3val2Par1, v3val2Par2, v3val2Par3])
-# Edad Anciano
-v3_val3 = fuzz.trapmf(x_variable3, [v3val3Par1, v3val3Par2, v3val3Par3, v3val3Par4])
-
-# Tiempo nuevo
-v4_val1 = fuzz.trapmf(x_variable4, [v4val1Par1, v4val1Par2, v4val1Par3, v4val1Par4])
-# Tiempo promedio
-v4_val2 = fuzz.trimf(x_variable4, [v4val2Par1, v4val2Par2, v4val2Par3])
-# Tiempo antiguo
-v4_val3 = fuzz.trapmf(x_variable4, [v4val3Par1, v4val3Par2, v4val3Par3, v4val3Par4])
-
-# Hijos bajo
-v5_val1 = fuzz.trapmf(x_variable5, [v5val1Par1, v5val1Par2, v5val1Par3, v5val1Par4])
-# Hijos moderado
-v5_val2 = fuzz.trimf(x_variable5,  [v5val2Par1, v5val2Par2, v5val2Par3])
-# Hijos alto
-v5_val3 = fuzz.trapmf(x_variable5, [v5val3Par1, v5val3Par2,v5val3Par3, v5val3Par4])
-
-# Deudas bajas
-v6_val1 = fuzz.trimf(x_variable6, [v6val1Par1, v6val1Par2, v6val1Par3])
-# Deudas medio
-v6_val2 = fuzz.trimf(x_variable6, [v6val2Par1, v6val2Par2, v6val2Par3])
-# Deudas alto
-v6_val3 = fuzz.trimf(x_variable6, [v6val3Par1, v6val3Par2, v6val3Par3])
-
-# Préstamo bajas
-pr_ba = fuzz.trimf(x_prestamo, [500, 500, 7500])
-# Préstamo medio
-pr_me = fuzz.trimf(x_prestamo, [5000, 15000, 30000])
-# Préstamo alto
-pr_al = fuzz.trimf(x_prestamo, [25000, 50000, 50000])
-
-def obtener_variablesC():
-    global variable1,variable2,variable3,variable4,variable5,variable6
-    variable1 = cVar1.get()
-    variable2 = cVar2.get()
-    variable3 = cVar3.get()
-    variable4 = cVar4.get()
-    variable5 = cVar5.get()
-    variable6 = cVar6.get()
-
-def evaluar_prest():
-    panel_evaluacion()
-    obtener_variablesC()
-    print(pr_ba)
-    print(pr_me)
-    print(pr_al)
-    fuzzi()
+#Reasignacion de variables
+var1[var1val1]=v1_val1
+var1[var1val2]=v1_val2
+var1[var1val3]=v1_val3
 
 def grafVar1():
     figIng, ax1 = plt.subplots(figsize=(5.5, 3))
@@ -1223,7 +1469,9 @@ def grafVar1():
     ax1.plot(x_variable1, v1_val2, 'g', linewidth=2, label=var1val2)
     ax1.plot(x_variable1, v1_val3, 'b', linewidth=2, label=var1val3)
     ax1.set_title(NVariable1)
-    ax1.legend()
+    ax1.legend(loc='upper right')
+    #ax1.set_xlabel("X_axis_title")
+    #ax1.set_ylabel("Y_axis_title")
 
     canvas = FigureCanvasTkAgg(figIng, master=ventana)
     canvas.draw()
@@ -1232,6 +1480,18 @@ def grafVar1():
     toolbar = NavigationToolbar2Tk(canvas, ventana)
     toolbar.place(x=333, y=375)
     toolbar.update()
+
+# CapPago Bajo
+v2_val1 = fuzz.trapmf(x_variable2, [v2val1Par1, v2val1Par2, v2val1Par3, v2val1Par4])
+# CapPago Medio
+v2_val2 = fuzz.trimf(x_variable2, [v2val2Par1, v2val2Par2, v2val2Par3])
+# CapPago Alto
+v2_val3 = fuzz.trapmf(x_variable2, [v2val3Par1, v2val3Par2, v2val3Par3, v2val3Par4])
+
+#Reasignacion de variables
+var2[var2val1]=v2_val1
+var2[var2val2]=v2_val2
+var2[var2val3]=v2_val3
 
 def grafVar2():
     figCP, ax2 = plt.subplots(figsize=(5.5, 3))
@@ -1250,6 +1510,18 @@ def grafVar2():
     toolbar.place(x=333, y=375)
     toolbar.update()
 
+# Edad Joven
+v3_val1 = fuzz.trapmf(x_variable3, [v3val1Par1, v3val1Par2, v3val1Par3, v3val1Par4])
+# Edad Adulta
+v3_val2 = fuzz.trimf(x_variable3, [v3val2Par1, v3val2Par2, v3val2Par3])
+# Edad Anciano
+v3_val3 = fuzz.trapmf(x_variable3, [v3val3Par1, v3val3Par2, v3val3Par3, v3val3Par4])
+
+#Reasignacion de variables
+var3[var3val1]=v3_val1
+var3[var3val2]=v3_val2
+var3[var3val3]=v3_val3
+
 def grafVar3():
     figEdad, ax0 = plt.subplots(figsize=(5.5, 3))
 
@@ -1266,6 +1538,18 @@ def grafVar3():
     toolbar = NavigationToolbar2Tk(canvas, ventana)
     toolbar.place(x=333, y=375)
     toolbar.update()
+
+# Tiempo nuevo
+v4_val1 = fuzz.trapmf(x_variable4, [v4val1Par1, v4val1Par2, v4val1Par3, v4val1Par4])
+# Tiempo promedio
+v4_val2 = fuzz.trimf(x_variable4, [v4val2Par1, v4val2Par2, v4val2Par3])
+# Tiempo antiguo
+v4_val3 = fuzz.trapmf(x_variable4, [v4val3Par1, v4val3Par2, v4val3Par3, v4val3Par4])
+
+#Reasignacion de variables
+var4[var4val1]=v4_val1
+var4[var4val2]=v4_val2
+var4[var4val3]=v4_val3
 
 def grafVar4():
     figT, ax3 = plt.subplots(figsize=(5.5, 3))
@@ -1284,6 +1568,17 @@ def grafVar4():
     toolbar.place(x=333, y=375)
     toolbar.update()
 
+# Hijos bajo
+v5_val1 = fuzz.trapmf(x_variable5, [v5val1Par1, v5val1Par2, v5val1Par3, v5val1Par4])
+# Hijos moderado
+v5_val2 = fuzz.trimf(x_variable5,  [v5val2Par1, v5val2Par2, v5val2Par3])
+# Hijos alto
+v5_val3 = fuzz.trapmf(x_variable5, [v5val3Par1, v5val3Par2,v5val3Par3, v5val3Par4])
+
+#Reasignacion de variables
+var5[var5val1]=v5_val1
+var5[var5val2]=v5_val2
+var5[var5val3]=v5_val3
 
 def grafVar5():
     figHi, ax4 = plt.subplots(figsize=(5.5, 3))
@@ -1302,6 +1597,18 @@ def grafVar5():
     toolbar.place(x=333, y=375)
     toolbar.update()
 
+# Deudas bajas
+v6_val1 = fuzz.trimf(x_variable6, [v6val1Par1, v6val1Par2, v6val1Par3])
+# Deudas medio
+v6_val2 = fuzz.trimf(x_variable6, [v6val2Par1, v6val2Par2, v6val2Par3])
+# Deudas alto
+v6_val3 = fuzz.trimf(x_variable6, [v6val3Par1, v6val3Par2, v6val3Par3])
+
+#Reasignacion de variables
+var6[var6val1]=v6_val1
+var6[var6val2]=v6_val2
+var6[var6val3]=v6_val3
+
 def grafVar6():
     figDe, ax5 = plt.subplots(figsize=(5.5, 3))
 
@@ -1319,13 +1626,23 @@ def grafVar6():
     toolbar.place(x=333, y=375)
     toolbar.update()
 
+# Préstamo bajas
+pr_ba = fuzz.trimf(x_prestamo, [500, 500, 7500])
+# Préstamo medio
+pr_me = fuzz.trimf(x_prestamo, [5000, 15000, 30000])
+# Préstamo alto
+pr_al = fuzz.trimf(x_prestamo, [25000, 50000, 50000])
+
+#Reasignacion de variables
+prestamo['BAJO']=pr_ba
+prestamo['MODERADO']=pr_me
+prestamo['ALTO']=pr_al
+
 def grafPrestamo():
-    ceros = np.zeros_like(x_prestamo)
     figPr, ax6 = plt.subplots(figsize=(5.5, 3))
-    ax6.plot(x_prestamo, pr_ba, 'r', linewidth=2, label="Bajo")
-    ax6.plot(x_prestamo, pr_me, 'g', linewidth=2, label="Moderado")
-    ax6.plot(x_prestamo, pr_al, 'b', linewidth=2, label="Alto")
-    ax6.fill_between(x_prestamo, ceros, agregar, facecolor="Orange", alpha=0.7)
+    ax6.plot(x_prestamo, pr_ba, 'r', linewidth=2, label='BAJO')
+    ax6.plot(x_prestamo, pr_me, 'g', linewidth=2, label='MODERADO')
+    ax6.plot(x_prestamo, pr_al, 'b', linewidth=2, label='ALTO')
     ax6.set_title("Préstamo")
     ax6.legend()
 
@@ -1337,103 +1654,35 @@ def grafPrestamo():
     toolbar.place(x=333, y=375)
     toolbar.update()
 
-    try:
-        clientevarsalida()
-        clientevar1()
-        clientevar2()
-        clientevar3()
-        clientevar4()
-        clientevar5()
-        clientevar6()
-    except:
-        print("ERROR, NO SE ENCUENTRA PRESTAMO")
+"""def clientevarsalida():
+    plt.plot([prestamos, prestamos], [0.0, 1.0], linestyle="--")
+    plt.plot(prestamos, pr_ba)
+    plt.plot(prestamos, pr_me)
+    plt.plot(prestamos, pr_al)"""
 
-def clientevar1():
+def definir_reglas():
+    global regla1,regla2,regla3
+    regla1=ctrl.Rule(var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val1],prestamo['BAJO'])
+    regla2=ctrl.Rule(var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val2],prestamo['MODERADO'])
+    regla3=ctrl.Rule(var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val3],prestamo['ALTO'])
+
+definir_reglas()
+control = ctrl.ControlSystem([regla1, regla2, regla3])
+controlar = ctrl.ControlSystemSimulation(control)
+
+def evaluar_prest():
+    panel_evaluacion()
     obtener_variablesC()
-    plt.plot([variable1,variable1],[0.0,1.0],linestyle="--")
-    plt.plot(variable1,v1_val1)
-    plt.plot(variable1,v1_val2)
-    plt.plot(variable1,v1_val3)
-
-def clientevar2():
-    plt.plot([variable2,variable2],[0.0,1.0],linestyle="--")
-    plt.plot(variable2,v2_val1)
-    plt.plot(variable2,v2_val2)
-    plt.plot(variable2,v2_val3)
-
-def clientevar3():
-    plt.plot([variable3,variable3],[0.0,1.0],linestyle="--")
-    plt.plot(variable3,v3_val1)
-    plt.plot(variable3,v3_val2)
-    plt.plot(variable3,v3_val3)
-
-def clientevar4():
-    plt.plot([variable4,variable4],[0.0,1.0],linestyle="--")
-    plt.plot(variable4,v4_val1)
-    plt.plot(variable4,v4_val2)
-    plt.plot(variable4,v4_val3)
-
-def clientevar5():
-    plt.plot([variable5,variable5],[0.0,1.0],linestyle="--")
-    plt.plot(variable5,v5_val1)
-    plt.plot(variable5,v5_val2)
-    plt.plot(variable5,v5_val3)
-
-def clientevar6():
-    plt.plot([variable6,variable6],[0.0,1.0],linestyle="--")
-    plt.plot(variable6,v6_val1)
-    plt.plot(variable6,v6_val2)
-    plt.plot(variable6,v6_val3)
-
-def clientevarsalida():
-    plt.plot([prestamo,prestamo],[0.0,1.0],linestyle="--")
-    plt.plot(prestamo,pr_ba)
-    plt.plot(prestamo,pr_me)
-    plt.plot(prestamo,pr_al)
-
-
-def fuzzi():
-    var1_lvl_ba = fuzz.interp_membership(x_variable1, v1_val1, variable1)
-    var1_lvl_me = fuzz.interp_membership(x_variable1, v1_val2, variable1)
-    var1_lvl_al = fuzz.interp_membership(x_variable1, v1_val3, variable1)
-
-    var2_lvl_ba = fuzz.interp_membership(x_variable2, v2_val1, variable2)
-    var2_lvl_me = fuzz.interp_membership(x_variable2, v2_val2, variable2)
-    var2_lvl_al = fuzz.interp_membership(x_variable2, v2_val3, variable2)
-
-    var3_lvl_jo = fuzz.interp_membership(x_variable3, v3_val1, variable3)
-    var3_lvl_ad = fuzz.interp_membership(x_variable3, v3_val2, variable3)
-    var3_lvl_vi = fuzz.interp_membership(x_variable3, v3_val3, variable3)
-
-    var4_lvl_nu = fuzz.interp_membership(x_variable4, v4_val1, variable4)
-    var4_lvl_pr = fuzz.interp_membership(x_variable4, v4_val2, variable4)
-    var4_lvl_an = fuzz.interp_membership(x_variable4, v4_val3, variable4)
-
-    var5_lvl_ba = fuzz.interp_membership(x_variable5, v5_val1, variable5)
-    var5_lvl_mo = fuzz.interp_membership(x_variable5, v5_val2, variable5)
-    var5_lvl_al = fuzz.interp_membership(x_variable5, v5_val3, variable5)
-
-    var6_lvl_ba = fuzz.interp_membership(x_variable6, v6_val1, variable6)
-    var6_lvl_me = fuzz.interp_membership(x_variable6, v6_val2, variable6)
-    var6_lvl_al = fuzz.interp_membership(x_variable6, v6_val3, variable6)
-
-    # reglas INGRESOS - CAPACIDAD - EDAD - TIEMPO - HIJOS - DEUDAS
-    activar_regla_1 = np.fmax(var1_lvl_ba, var2_lvl_ba)
-    activar_regla_2 = np.fmax(var1_lvl_me, var2_lvl_me)
-    activar_regla_3 = np.fmax(var1_lvl_al, var2_lvl_al)
-
-    prestamo_ba = np.fmin(activar_regla_1, pr_ba)
-    prestamo_md = np.fmin(activar_regla_2, pr_me)
-    prestamo_al = np.fmin(activar_regla_3, pr_al)
-
-    global prestamo, agregar
-    agregar = np.fmax(prestamo_ba, np.fmax(prestamo_md, prestamo_md))
-    prestamo = fuzz.defuzz(x_prestamo, agregar, 'centroid')
-
-
-    # Reduce el resultado a 2 decimales
-    lblResp.configure(text=str(round(prestamo, 2)))
-
-
+    controlar.input[NVariable1] = int(variable1)
+    controlar.input[NVariable2] = int(variable2)
+    controlar.input[NVariable3] = int(variable3)
+    controlar.input[NVariable4] = int(variable4)
+    controlar.input[NVariable5] = int(variable5)
+    controlar.input[NVariable6] = int(variable6)
+    controlar.compute()
+    global resultado
+    resultado=controlar.output['prestamo']
+    lblResp.configure(text=str(round(resultado, 2)))
+    prestamo.view(sim=controlar)
 
 ventana.mainloop()
