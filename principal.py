@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import ttk, font, Label, PhotoImage, VERTICAL
+
+import easygui as easygui
 import matplotlib.pyplot as plt
 from skfuzzy.control.visualization import ControlSystemVisualizer
-
 from Values import Colors
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import numpy as np
@@ -11,7 +12,6 @@ import database
 from tkinter import messagebox
 from skfuzzy import control as ctrl
 import sqlite3
-from reglas import *
 import sys
 
 ventana = tk.Tk()
@@ -195,14 +195,12 @@ def mostrar_variables():
             JOIN VARIABLES ON VARIABLES.ID_Variable = VALORES_LINGUISTICOS.ID_Variable""")
 
     datos=miCursor.fetchall()
-    var1,var2,var3,var4,var5,var6,var7,var8,var9,var10,var11,var12,var13,var14,var15,var16,var17,var18 =datos
-    global NVariable1,NVariable2,NVariable3,NVariable4,NVariable5,NVariable6
+    var1,var2,var3,var4,var5,var6,var7,var8,var9,var10,var11,var12 =datos
+    global NVariable1,NVariable2,NVariable3,NVariable4
     NVariable1=var1[1]
     NVariable2=var4[1]
     NVariable3=var7[1]
     NVariable4=var10[1]
-    NVariable5=var13[1]
-    NVariable6=var16[1]
 
     global var1val1,var1val2,var1val3
     var1val1 = var1[0]
@@ -221,15 +219,6 @@ def mostrar_variables():
     var4val1 = var10[0]
     var4val2 = var11[0]
     var4val3 = var12[0]
-    global var5val1, var5val2, var5val3
-    var5val1 = var13[0]
-    var5val2 = var14[0]
-    var5val3 = var15[0]
-    global var6val1, var6val2, var6val3
-    var6val1 = var16[0]
-    var6val2 = var17[0]
-    var6val3 = var18[0]
-
 
     #OBTENCION DE PARAMETROS
     # Variable 1 - Valor Linguistico 1
@@ -304,42 +293,6 @@ def mostrar_variables():
     v4val3Par2 = var12[3]
     v4val3Par3 = var12[4]
     v4val3Par4 = var12[5]
-    # Variable 5 - Valor Linguistico 1
-    global v5val1Par1, v5val1Par2, v5val1Par3, v5val1Par4
-    v5val1Par1 = var13[2]
-    v5val1Par2 = var13[3]
-    v5val1Par3 = var13[4]
-    v5val1Par4 = var13[5]
-    # Variable 5 - Valor Linguistico 2
-    global v5val2Par1, v5val2Par2, v5val2Par3, v5val2Par4
-    v5val2Par1 = var14[2]
-    v5val2Par2 = var14[3]
-    v5val2Par3 = var14[4]
-    v5val2Par4 = var14[5]
-    # Variable 5 - Valor Linguistico 3
-    global v5val3Par1, v5val3Par2, v5val3Par3, v5val3Par4
-    v5val3Par1 = var15[2]
-    v5val3Par2 = var15[3]
-    v5val3Par3 = var15[4]
-    v5val3Par4 = var15[5]
-    # Variable 6 - Valor Linguistico 1
-    global v6val1Par1, v6val1Par2, v6val1Par3, v6val1Par4
-    v6val1Par1 = var16[2]
-    v6val1Par2 = var16[3]
-    v6val1Par3 = var16[4]
-    v6val1Par4 = var16[5]
-    # Variable 6 - Valor Linguistico 2
-    global v6val2Par1, v6val2Par2, v6val2Par3, v6val2Par4
-    v6val2Par1 = var17[2]
-    v6val2Par2 = var17[3]
-    v6val2Par3 = var17[4]
-    v6val2Par4 = var17[5]
-    # Variable 6 - Valor Linguistico 3
-    global v6val3Par1, v6val3Par2, v6val3Par3, v6val3Par4
-    v6val3Par1 = var18[2]
-    v6val3Par2 = var18[3]
-    v6val3Par3 = var18[4]
-    v6val3Par4 = var18[5]
 
 mostrar_variables()
 
@@ -558,6 +511,7 @@ def variables_screen():
     table.heading("Parametro3", text="Parametro3")
     table.heading("Parametro4", text="Parametro4")
     table.place(x=10, y=250, width=900, height=330)
+    verDataTable()
 
 def verDataTable():
     table.delete(*table.get_children())
@@ -727,29 +681,43 @@ def MenuBar():
     helpmenu.add_command(label="Acerca de...")
 
     variablemenu = tk.Menu(BarraMenu, tearoff=0)
-    variablemenu.add_command(label="Configuracion", command=abVar_crReg)
+    variablemenu.add_command(label="Configuracion", command=abrir_variables)
 
-    reglamenu = tk.Menu(BarraMenu, tearoff=0)
-    reglamenu.add_command(label="Configuracion",command=abReg_crVar)
+    reglamenu = tk.Menu(BarraMenu, tearoff=0)#abReg_crVar
+    reglamenu.add_command(label="Configuracion",command=abrir_reglas)
+    reglamenu.add_command(label="Visor de regla prestamo", command=input_message)
+    reglamenu.add_command(label="Visor de regla riesgo", command=input_message_riesgo)
+    reglamenu.add_command(label="Visor de Superficie Difusa", command=grafica_3d_riesgo)
+
+    personalmenu = tk.Menu(BarraMenu, tearoff=0)
+    personalmenu.add_command(label="Configuracion", command=abrir_personal)
 
     BarraMenu.add_cascade(label="Cuenta", menu=sesionmenu)
     BarraMenu.add_cascade(label="Variable", menu=variablemenu)
     BarraMenu.add_cascade(label="Reglas", menu=reglamenu)
-    BarraMenu.add_cascade(label="Personal", menu=helpmenu)
+    BarraMenu.add_cascade(label="Personal", menu=personalmenu)
     BarraMenu.add_cascade(label="Ayuda", menu=helpmenu)
+
+def input_message():
+    global cRegla
+    cRegla = easygui.enterbox("Ingrese la regla a visualizar: Ejm: regla 1","REGLAS DEL PRESTAMO")
+    ver_reglas()
+
+def input_message_riesgo():
+    global cReglaRiesgo
+    cReglaRiesgo = easygui.enterbox("Ingrese la regla a visualizar: Ejm: regla 1","REGLAS DEL RIESGO")
+    ver_reglas_riesgo()
 
 
 def ingresar():
     close_loginScreen()
     varEntradas()
     grafVar1()
-    bVariable1.place(x=413, y=50, width=80)
-    bVariable3.place(x=493, y=50, width=47)
-    bVariable2.place(x=540, y=50, width=150)
-    bVariable4.place(x=690, y=50, width=60)
-    bVariable5.place(x=750, y=50, width=50)
-    bVariable6.place(x=800, y=50, width=85)
-    bPrestamo.place(x=333, y=50, width=80)
+    bVariable1.place(x=493, y=50, width=80)
+    bVariable2.place(x=573, y=50, width=150)
+    bVariable3.place(x=723, y=50, width=47)
+    bVariable4.place(x=770, y=50, width=60)
+    bPrestamo.place(x=403, y=50, width=90)
     database.conexionBBDD()
 
 
@@ -860,72 +828,67 @@ def varEntradas():
     bBorrar.place(x=180, y=305, height=30)
 
     Sep = ttk.Separator(ventana)
-    Sep.place(x=40, y=340, relwidth=0.27)
+    Sep.place(x=40, y=350, relwidth=0.27)
 
     lblFormEval = tk.Label(ventana, text="EVALUAR PRÉSTAMO", bg=Colors.ColorWhite, font=FontTitle)
-    lblFormEval.place(x=40, y=350)
+    lblFormEval.place(x=40, y=360)
 
-    global cVar1, cVar2,cVar3, cVar4, cVar5, cVar6
-    global lblVar1,lblVar2, lblVar3, lblVar4,lblVar5,lblVar6
+    global cVar1, cVar2,cVar3, cVar4
+    global lblVar1,lblVar2, lblVar3, lblVar4
     lblVar1 = tk.Label(ventana, bg=Colors.ColorWhite, text=NVariable1+": ")
-    lblVar1.place(x=40, y=380)
+    lblVar1.place(x=40, y=390)
     cVar1 = tk.Entry(ventana)
-    cVar1.place(x=150, y=380)
+    cVar1.place(x=150, y=390)
 
     lblVar2 = tk.Label(ventana, bg=Colors.ColorWhite, text=NVariable2+": ")
-    lblVar2.place(x=40, y=410)
+    lblVar2.place(x=40, y=420)
     cVar2 = tk.Entry(ventana)
-    cVar2.place(x=150, y=410)
+    cVar2.place(x=150, y=420)
 
     lblVar3 = tk.Label(ventana, bg=Colors.ColorWhite, text=NVariable3+": ")
-    lblVar3.place(x=40, y=440)
+    lblVar3.place(x=40, y=450)
     cVar3 = tk.Entry(ventana, textvariable=micEdad)
-    cVar3.place(x=150, y=440)
+    cVar3.place(x=150, y=450)
 
     lblVar4 = tk.Label(ventana, bg=Colors.ColorWhite, text=NVariable4+": ")
-    lblVar4.place(x=40, y=470)
+    lblVar4.place(x=40, y=480)
     cVar4 = tk.Entry(ventana)
-    cVar4.place(x=150, y=470)
-
-    lblVar5 = tk.Label(ventana, bg=Colors.ColorWhite, text=NVariable5+": ")
-    lblVar5.place(x=40, y=500)
-    cVar5 = tk.Entry(ventana)
-    cVar5.place(x=150, y=500)
-
-    lblVar6 = tk.Label(ventana, bg=Colors.ColorWhite, text=NVariable6+": ")
-    lblVar6.place(x=40, y=530)
-    cVar6 = tk.Entry(ventana)
-    cVar6.place(x=150, y=530)
+    cVar4.place(x=150, y=480)
 
     bEvaluar = tk.Button(ventana, bg=Colors.ColorSecundary, text="EVALUAR", font=comp, command=evaluar_prest)
     bEvaluar.configure(relief=tk.GROOVE, background=Colors.ColorSecundary, activebackground=Colors.ColorSecundaryDark)
-    bEvaluar.place(x=120, y=550)
+    bEvaluar.place(x=120, y=520)
 
 
 def panel_evaluacion():
-    panel = tk.Label(ventana, width=80, height=10, borderwidth=1, relief="sunken", bg="white")
+    panel = tk.Label(ventana, width=80, height=11, borderwidth=1, relief="sunken", bg="white")
     panel.place(x=333, y=415)
 
-    lblTitle = tk.Label(ventana, text="RESULTADOS DE EVALUACIÓN", bg="white",
+    lblTitle = tk.Label(ventana, text="RESULTADOS DE EVALUACIÓN", bg="white",fg=Colors.ColorPrimary,
                         font=font.Font(family='helvetica', size=15, weight="bold"))
     lblTitle.place(x=335, y=420)
 
-    lblPrestamo = tk.Label(ventana, text="EL MONTO A PRESTAR ES DE: S/. ", bg="white")
+    lblPrestamo = tk.Label(ventana, text="El prestamo ideal es de:     S/. ", bg="white")
     lblPrestamo.place(x=335, y=460)
 
-    lblTipPr = tk.Label(ventana, text="Cantidad a prestar: ", bg="white")
-    lblTipPr.place(x=335, y=490)
+    lblLimite = tk.Label(ventana, text="El prestamo limite es de:   S/. ", bg="white")
+    lblLimite.place(x=335, y=490)
 
-    global lblResp, lblCantPr
-    miResp = tk.StringVar()
+    lblTipPr = tk.Label(ventana, text="Ingrese la cantidad del prestamo: S/.", bg="white")
+    lblTipPr.place(x=335, y=520)
+
+    global lblResp, lblCantPr,cLimit
     lblResp = tk.Label(ventana, text="", bg="white")
-    lblResp.place(x=515, y=460)
+    lblResp.place(x=490, y=460)
 
-    lblCantPr = tk.Entry(ventana)
-    lblCantPr.place(x=450, y=490)
+    cLimit = tk.Label(ventana, text="", bg="white")
+    cLimit.place(x=490, y=490)
 
-    bCalcular = tk.Button(ventana, text="CALCULAR", bg=Colors.ColorSecundary,command=calcular_prc_prestamo)
-    bCalcular.place(x=335, y=520)
+    lblCantPr = tk.Entry(ventana,state=tk.NORMAL)
+    lblCantPr.place(x=530, y=520,width=65)
+
+    bCalcular = tk.Button(ventana, text="CALCULAR", bg=Colors.ColorSecundary,command=comprobar_valores)
+    bCalcular.place(x=385, y=545)
 
 def switchVar3():
     if (bVariable3['state'] == tk.NORMAL):
@@ -942,12 +905,6 @@ def switchVar3():
         # Tiempo
         bVariable4['state'] = tk.NORMAL
         bVariable4['bg'] = Colors.ColorSecundary
-        # Hijos
-        bVariable5['state'] = tk.NORMAL
-        bVariable5['bg'] = Colors.ColorSecundary
-        # Deudas
-        bVariable6['state'] = tk.NORMAL
-        bVariable6['bg'] = Colors.ColorSecundary
         # Préstamo
         bPrestamo['state'] = tk.NORMAL
         bPrestamo['bg'] = Colors.ColorSalida
@@ -968,12 +925,6 @@ def switchVar1():
         # Tiempo
         bVariable4['state'] = tk.NORMAL
         bVariable4['bg'] = Colors.ColorSecundary
-        # Hijos
-        bVariable5['state'] = tk.NORMAL
-        bVariable5['bg'] = Colors.ColorSecundary
-        # Deudas
-        bVariable6['state'] = tk.NORMAL
-        bVariable6['bg'] = Colors.ColorSecundary
         # Préstamo
         bPrestamo['state'] = tk.NORMAL
         bPrestamo['bg'] = Colors.ColorSalida
@@ -994,12 +945,6 @@ def switchVar2():
         # Tiempo
         bVariable4['state'] = tk.NORMAL
         bVariable4['bg'] = Colors.ColorSecundary
-        # Hijos
-        bVariable5['state'] = tk.NORMAL
-        bVariable5['bg'] = Colors.ColorSecundary
-        # Deudas
-        bVariable6['state'] = tk.NORMAL
-        bVariable6['bg'] = Colors.ColorSecundary
         # Préstamo
         bPrestamo['state'] = tk.NORMAL
         bPrestamo['bg'] = Colors.ColorSalida
@@ -1020,68 +965,9 @@ def switchVar4():
         bVariable4['state'] = tk.DISABLED
         bVariable4['bg'] = Colors.ColorsDisabled
         grafVar4()
-        # Hijos
-        bVariable5['state'] = tk.NORMAL
-        bVariable5['bg'] = Colors.ColorSecundary
-        # Deudas
-        bVariable6['state'] = tk.NORMAL
-        bVariable6['bg'] = Colors.ColorSecundary
         # Préstamo
         bPrestamo['state'] = tk.NORMAL
         bPrestamo['bg'] = Colors.ColorSalida
-
-
-def switchVar5():
-    if (bVariable5['state'] == tk.NORMAL):
-        # Edad
-        bVariable3['state'] = tk.NORMAL
-        bVariable3['bg'] = Colors.ColorSecundary
-        # Ingreso
-        bVariable1['state'] = tk.NORMAL
-        bVariable1['bg'] = Colors.ColorSecundary
-        # CapPago
-        bVariable2['state'] = tk.NORMAL
-        bVariable2['bg'] = Colors.ColorSecundary
-        # Tiempo
-        bVariable4['state'] = tk.NORMAL
-        bVariable4['bg'] = Colors.ColorSecundary
-        # Hijos
-        bVariable5['state'] = tk.DISABLED
-        bVariable5['bg'] = Colors.ColorsDisabled
-        grafVar5()
-        # Deudas
-        bVariable6['state'] = tk.NORMAL
-        bVariable6['bg'] = Colors.ColorSecundary
-        # Préstamo
-        bPrestamo['state'] = tk.NORMAL
-        bPrestamo['bg'] = Colors.ColorSalida
-
-
-def switchVar6():
-    if (bVariable6['state'] == tk.NORMAL):
-        # Edad
-        bVariable3['state'] = tk.NORMAL
-        bVariable3['bg'] = Colors.ColorSecundary
-        # Ingreso
-        bVariable1['state'] = tk.NORMAL
-        bVariable1['bg'] = Colors.ColorSecundary
-        # CapPago
-        bVariable2['state'] = tk.NORMAL
-        bVariable2['bg'] = Colors.ColorSecundary
-        # Tiempo
-        bVariable4['state'] = tk.NORMAL
-        bVariable4['bg'] = Colors.ColorSecundary
-        # Hijos
-        bVariable5['state'] = tk.NORMAL
-        bVariable5['bg'] = Colors.ColorSecundary
-        # Deudas
-        bVariable6['state'] = tk.DISABLED
-        bVariable6['bg'] = Colors.ColorsDisabled
-        grafVar6()
-        # Préstamo
-        bPrestamo['state'] = tk.NORMAL
-        bPrestamo['bg'] = Colors.ColorSalida
-
 
 def switchPrestamo():
     if (bPrestamo['state'] == tk.NORMAL):
@@ -1097,12 +983,6 @@ def switchPrestamo():
         # Tiempo
         bVariable4['state'] = tk.NORMAL
         bVariable4['bg'] = Colors.ColorSecundary
-        # Hijos
-        bVariable5['state'] = tk.NORMAL
-        bVariable5['bg'] = Colors.ColorSecundary
-        # Deudas
-        bVariable6['state'] = tk.NORMAL
-        bVariable6['bg'] = Colors.ColorSecundary
         # Préstamo
         bPrestamo['state'] = tk.DISABLED
         bPrestamo['bg'] = Colors.ColorsDisabled
@@ -1124,31 +1004,209 @@ bVariable3.configure(relief=tk.GROOVE, background=Colors.ColorSecundary, activeb
 #Variable4
 bVariable4 = tk.Button(ventana, bg=Colors.ColorSecundary, text=NVariable4, state=tk.NORMAL, command=switchVar4, font=SVar)
 bVariable4.configure(relief=tk.GROOVE, background=Colors.ColorSecundary, activebackground=Colors.ColorSecundaryDark)
-#Variable5
-bVariable5 = tk.Button(ventana, bg=Colors.ColorSecundary, text=NVariable5, state=tk.NORMAL, command=switchVar5, font=SVar)
-bVariable5.configure(relief=tk.GROOVE, background=Colors.ColorSecundary, activebackground=Colors.ColorSecundaryDark)
-#Variable6
-bVariable6 = tk.Button(ventana, bg=Colors.ColorSecundary, text=NVariable6, state=tk.NORMAL, command=switchVar6, font=SVar)
-bVariable6.configure(relief=tk.GROOVE, background=Colors.ColorSecundary, activebackground=Colors.ColorSecundaryDark)
 #VariableSalida
 bPrestamo = tk.Button(ventana, bg=Colors.ColorSecundary, text="PRÉSTAMO", state=tk.NORMAL, command=switchPrestamo,
                       font=SVar)
 bPrestamo.configure(relief=tk.GROOVE, background=Colors.ColorSalida, activebackground=Colors.ColorSalidaDark)
 
 
+def personal_screen():
+    global pID, pNombre, pApellido, pCorreo, pRol, pUsuario, pContraseña
+    global mipID, mipNombre, mipApellido, mipCorreo, mipRol, mipUsuario, mipContraseña
+
+    mipID = tk.StringVar()
+    mipNombre = tk.StringVar()
+    mipApellido = tk.StringVar()
+    mipRol = tk.StringVar()
+    mipCorreo = tk.StringVar()
+    mipUsuario = tk.StringVar()
+    mipContraseña = tk.StringVar()
+
+    global lblpID,lblpNombre,lblpApellido,lblpCorreo,lblpRol,lblpUsuario,lblpContraseña,lblpTitle
+    lblpTitle=tk.Label(ventana,text="DATOS", font=font.Font(size=15, weight="bold"), bg="#FFFFFF")
+    lblpTitle.place(x=80, y=15)
+
+    lblpID = tk.Label(ventana, text="ID:", bg=Colors.ColorWhite)
+    lblpID.place(x=80, y=70)
+    pID = tk.Entry(ventana, textvariable=mipID, state=tk.NORMAL)
+    pID.place(x=155, y=70, width=40)
+
+    lblpNombre = tk.Label(ventana, text="NOMBRE:", bg=Colors.ColorWhite)
+    lblpNombre.place(x=80, y=100)
+    pNombre = tk.Entry(ventana, textvariable=mipNombre, state=tk.DISABLED)
+    pNombre.place(x=155, y=100, width=100)
+
+    lblpApellido = tk.Label(ventana, text="APELLIDO:", bg=Colors.ColorWhite)
+    lblpApellido.place(x=80, y=130)
+    pApellido = tk.Entry(ventana, textvariable=mipApellido, state=tk.DISABLED)
+    pApellido.place(x=155, y=130, width=100)
+
+    lblpCorreo = tk.Label(ventana, text="CORREO:", bg=Colors.ColorWhite)
+    lblpCorreo.place(x=275, y=100)
+    pCorreo = tk.Entry(ventana, textvariable=mipCorreo, state=tk.DISABLED)
+    pCorreo.place(x=350, y=100, width=150)
+
+    lblpRol = tk.Label(ventana, text="ROL:", bg=Colors.ColorWhite)
+    lblpRol.place(x=275, y=130)
+    pRol = tk.Entry(ventana, textvariable=mipRol, state=tk.DISABLED)
+    pRol.place(x=350, y=130, width=150)
+
+    lblpUsuario = tk.Label(ventana, text="USUARIO:", bg=Colors.ColorWhite)
+    lblpUsuario.place(x=525, y=100)
+    pUsuario = tk.Entry(ventana, textvariable=mipUsuario, state=tk.DISABLED)
+    pUsuario.place(x=650, y=100, width=150)
+
+    lblpContraseña = tk.Label(ventana, text="CONTRASEÑA:", bg=Colors.ColorWhite)
+    lblpContraseña.place(x=525, y=130)
+    pContraseña = tk.Entry(ventana, textvariable=mipContraseña, state=tk.DISABLED)
+    pContraseña.place(x=650, y=130, width=150)
+
+    # BOTONES
+    global bpBuscar, bpModificar, bpLimpiar, bpAgregar, bpGuardar, bpActualizar
+    bpBuscar = tk.Button(ventana, text="BUSCAR", image=Buscar23, compound="left", bg=Colors.ColorSecundary,
+                         font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                         command=buscarPersonal)
+    bpBuscar.place(x=60, y=190, width=110, height=25)
+
+    bpModificar = tk.Button(ventana, text="MODIFICAR", image=Modificar23, compound="left", bg=Colors.ColorSecundary,
+                            font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                            command=modificarPer)
+    bpModificar.place(x=200, y=190, width=110, height=25)
+
+    bpLimpiar = tk.Button(ventana, text="LIMPIAR", image=Borrar23, compound="left", bg=Colors.ColorSecundary,
+                          font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                          command=limpiarPersonal)
+    bpLimpiar.place(x=340, y=190, width=110, height=25)
+
+    bpAgregar = tk.Button(ventana, text="AGREGAR", image=Borrar23, compound="left", bg=Colors.ColorSecundary,
+                          font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                          command=agregar_personal)
+    bpAgregar.place(x=480, y=190, width=110, height=25)
+
+    bpGuardar = tk.Button(ventana, text="GUARDAR", image=Guardar23, compound="left", bg=Colors.ColorSecundary,
+                          font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                          command=guardarPer)
+    bpGuardar.place(x=620, y=190, width=110, height=25)
+
+    bpActualizar = tk.Button(ventana, text="ACTUALIZAR", image=Actualizar23, compound="left", bg=Colors.ColorSecundary,
+                             font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                             command=verTablaPersonal)
+    bpActualizar.place(x=750, y=190, width=120, height=25)
+
+    # TABLA DE REGLAS
+    global tabla_personal
+    tabla_personal = ttk.Treeview(column=(
+        "ID_Personal", "Nombre", "Apellido", "Correo", "Rol", "Usuario", "Contraseña"), show='headings')
+    tabla_personal.heading("ID_Personal", text="ID_Personal")
+    tabla_personal.heading("Nombre", text="Nombre")
+    tabla_personal.heading("Apellido", text="Apellido")
+    tabla_personal.heading("Correo", text="Correo")
+    tabla_personal.heading("Rol", text="Rol")
+    tabla_personal.heading("Usuario", text="Usuario")
+    tabla_personal.heading("Contraseña", text="Contraseña")
+    tabla_personal.place(x=10, y=250, width=900, height=330)
+    verTablaPersonal()
+
+def verTablaPersonal():
+    tabla_personal.delete(*tabla_personal.get_children())
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+    miCursor.execute("SELECT ID_Empleado,Nombre,Apellido,Correo, Rol, Usuario, Contraseña FROM EMPLEADOS")
+    for row in miCursor:
+        personal = (
+            '{0} {1} {2} {3} {4} {5} {6}'.format(row[0], row[1], row[2], row[3], row[4], row[5],row[6]))
+        tabla_personal.insert("", tk.END, values=personal)
+
+    miConexion.commit()
+
+def buscarPersonal():
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+
+    miCursor.execute("""SELECT ID_Empleado,Nombre,Apellido,Correo, Rol, Usuario, Contraseña FROM EMPLEADOS
+                    WHERE ID_Empleado= """ + pID.get())
+
+    datosPersonal = miCursor.fetchall()
+    lista_personal,*asaw=datosPersonal
+    mipID.set(lista_personal[0])
+    mipNombre.set(lista_personal[1])
+    mipApellido.set(lista_personal[2])
+    mipCorreo.set(lista_personal[3])
+    mipRol.set(lista_personal[4])
+    mipUsuario.set(lista_personal[5])
+    mipContraseña.set(lista_personal[6])
+
+    miConexion.commit()
+
+def limpiarPersonal():
+    mipID.set("")
+    mipNombre.set("")
+    mipApellido.set("")
+    mipCorreo.set("")
+    mipRol.set("")
+    mipUsuario.set("")
+    mipContraseña.set("")
+
+def modificarPer():
+    pNombre['state'] = tk.NORMAL
+    pApellido['state'] = tk.NORMAL
+    pCorreo['state'] = tk.NORMAL
+    pRol['state'] = tk.NORMAL
+    pUsuario['state'] = tk.NORMAL
+    pContraseña['state'] = tk.NORMAL
+
+def bloqPer():
+    pNombre['state'] = tk.DISABLED
+    pApellido['state'] = tk.DISABLED
+    pCorreo['state'] = tk.DISABLED
+    pRol['state'] = tk.DISABLED
+    pUsuario['state'] = tk.DISABLED
+    pContraseña['state'] = tk.DISABLED
+
+def guardarPer():
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+
+    miCursor.execute("UPDATE EMPLEADOS SET Nombre='" + pNombre.get() +
+                     "',Apellido='" + pApellido.get() +
+                     "',Correo='" + pCorreo.get() +
+                     "',Rol='" + pRol.get() +
+                     "',Usuario='" + pUsuario.get() +
+                     "',Contraseña='" + pContraseña.get() +
+                     "'WHERE ID_Empleado=" + pID.get())
+
+    messagebox.showinfo("DB", "LOS DATOS SE GUARDARON CORRECTAMENTE")
+    miConexion.commit()
+    bloqPer()
+
+def agregar_personal():
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+
+    miCursor.execute("INSERT INTO EMPLEADOS VALUES(NULL, '"+pUsuario.get() +
+                     "','"+pContraseña.get() +
+                     "','"+pRol.get() +
+                     "','"+pNombre.get() +
+                     "','"+pApellido.get() +
+                     "','"+pCorreo.get() + "')")
+    miConexion.commit()
+    messagebox.showinfo("REGISTRO","Registro insertado con éxito")
+
 def reglas_screen():
-    global crID, crCondicion1, crCondicion2, crCondicion3, crCondicion4, crCondicion5, crCondicion6, crRegla
-    global mirID, mirCondicion1, mirCondicion2, mirCondicion3, mirCondicion4, mirCondicion5, mirCondicion6, mirRegla
+    global crID, crCondicion1, crCondicion2, crCondicion3, crCondicion4, crRegla
+    global mirID, mirCondicion1, mirCondicion2, mirCondicion3, mirCondicion4, mirRegla
 
     mirID = tk.StringVar()
     mirCondicion1 = tk.StringVar()
     mirCondicion2 = tk.StringVar()
     mirCondicion3 = tk.StringVar()
     mirCondicion4 = tk.StringVar()
-    mirCondicion5 = tk.StringVar()
-    mirCondicion6 = tk.StringVar()
     mirRegla = tk.StringVar()
-    global lblReglas,lblrID,lblrRegla,lblc1,lblc2,lblc3,lblc4,lblc5,lblc6
+    global lblReglas,lblrID,lblrRegla,lblc1,lblc2,lblc3,lblc4
     lblReglas = tk.Label(ventana, text="REGLAS", font=font.Font(size=15, weight="bold"), bg="#FFFFFF")
     lblReglas.place(x=80, y=15)
 
@@ -1178,15 +1236,6 @@ def reglas_screen():
     lblc4.place(x=475, y=100)
     crCondicion4 = tk.Entry(ventana, textvariable=mirCondicion4, state=tk.DISABLED)
     crCondicion4.place(x=550, y=100, width=75)
-
-    lblc5 = tk.Label(ventana, text="Condicion 5:", bg=Colors.ColorWhite)
-    lblc5.place(x=675, y=70)
-    crCondicion5 = tk.Entry(ventana, textvariable=mirCondicion5, state=tk.DISABLED)
-    crCondicion5.place(x=750, y=70, width=75)
-    lblc6 = tk.Label(ventana, text="Condicion 6:", bg=Colors.ColorWhite)
-    lblc6.place(x=675, y=100)
-    crCondicion6 = tk.Entry(ventana, textvariable=mirCondicion6, state=tk.DISABLED)
-    crCondicion6.place(x=750, y=100, width=75)
 
     #BOTONES
     global brBuscar, brModificar, brLimpiar, brGuardar, brActualizar
@@ -1218,16 +1267,15 @@ def reglas_screen():
     #TABLA DE REGLAS
     global tabla_regla
     tabla_regla = ttk.Treeview(column=(
-    "ID_Regla", "Condicion1", "Condicion2", "Condicion3", "Condicion4", "Condicion5", "Condicion6", "Regla"), show='headings')
+    "ID_Regla", "Condicion1", "Condicion2", "Condicion3", "Condicion4","Regla"), show='headings')
     tabla_regla.heading("ID_Regla", text="ID_Regla")
     tabla_regla.heading("Condicion1", text="Condicion1")
     tabla_regla.heading("Condicion2", text="Condicion2")
     tabla_regla.heading("Condicion3", text="Condicion3")
     tabla_regla.heading("Condicion4", text="Condicion4")
-    tabla_regla.heading("Condicion5", text="Condicion5")
-    tabla_regla.heading("Condicion6", text="Condicion6")
     tabla_regla.heading("Regla", text="Regla")
     tabla_regla.place(x=10, y=250, width=900, height=330)
+    verTablaReglas()
 
 def verTablaReglas():
     tabla_regla.delete(*tabla_regla.get_children())
@@ -1235,10 +1283,10 @@ def verTablaReglas():
 
     miCursor = miConexion.cursor()
     miCursor.execute("""SELECT REGLAS.ID_Regla,REGLAS.Condicion1,REGLAS.Condicion2,REGLAS.Condicion3,REGLAS.Condicion4,
-        REGLAS.Condicion5, REGLAS.Condicion6, REGLAS.Regla FROM REGLAS""")
+        REGLAS.Regla FROM REGLAS""")
     for row in miCursor:
         reglas = (
-            '{0} {1} {2} {3} {4} {5} {6} {7}'.format(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7],))
+            '{0} {1} {2} {3} {4} {5}'.format(row[0], row[1], row[2], row[3], row[4], row[5]))
         tabla_regla.insert("", tk.END, values=reglas)
 
     miConexion.commit()
@@ -1248,7 +1296,7 @@ def buscarReglas():
 
     miCursor = miConexion.cursor()
 
-    miCursor.execute("""SELECT ID_Regla, Condicion1, Condicion2, Condicion3, Condicion4, Condicion5, Condicion6, Regla FROM REGLAS
+    miCursor.execute("""SELECT ID_Regla, Condicion1, Condicion2, Condicion3, Condicion4, Regla FROM REGLAS
         WHERE ID_Regla= """ + crID.get())
 
     datosRegla = miCursor.fetchall()
@@ -1257,12 +1305,9 @@ def buscarReglas():
     mirCondicion2.set(lista[2])
     mirCondicion3.set(lista[3])
     mirCondicion4.set(lista[4])
-    mirCondicion5.set(lista[5])
-    mirCondicion6.set(lista[6])
-    mirRegla.set(lista[7])
+    mirRegla.set(lista[5])
 
     miConexion.commit()
-
 
 def limpiarReglas():
     mirID.set("")
@@ -1270,8 +1315,6 @@ def limpiarReglas():
     mirCondicion2.set("")
     mirCondicion3.set("")
     mirCondicion4.set("")
-    mirCondicion5.set("")
-    mirCondicion6.set("")
     mirRegla.set("")
 
 def modificarReg():
@@ -1279,8 +1322,6 @@ def modificarReg():
     crCondicion2['state'] = tk.NORMAL
     crCondicion3['state'] = tk.NORMAL
     crCondicion4['state'] = tk.NORMAL
-    crCondicion5['state'] = tk.NORMAL
-    crCondicion6['state'] = tk.NORMAL
     crRegla['state'] = tk.NORMAL
 
 def bloqReg():
@@ -1288,8 +1329,6 @@ def bloqReg():
     crCondicion2['state'] = tk.DISABLED
     crCondicion3['state'] = tk.DISABLED
     crCondicion4['state'] = tk.DISABLED
-    crCondicion5['state'] = tk.DISABLED
-    crCondicion6['state'] = tk.DISABLED
     crRegla['state'] = tk.DISABLED
 
 def guardarReg():
@@ -1301,8 +1340,6 @@ def guardarReg():
                      "',Condicion2='" + crCondicion2.get() +
                      "',Condicion3='" + crCondicion3.get() +
                      "',Condicion4='" + crCondicion4.get() +
-                     "',Condicion5='" + crCondicion5.get() +
-                     "',Condicion6='" + crCondicion6.get() +
                      "',Regla='" + crRegla.get() +
                      "'WHERE ID_Regla=" + crID.get())
 
@@ -1310,13 +1347,57 @@ def guardarReg():
     miConexion.commit()
     bloqReg()
 
-def abVar_crReg():
-    cerrar_reglas()
-    variables_screen()
 
-def abReg_crVar():
+def abrir_variables():
+    variables_screen()
+    try:
+        cerrar_reglas()
+        cerrar_personal()
+    except:
+        print()
+
+def abrir_reglas():
     reglas_screen()
-    cerrar_variables()
+    try:
+        cerrar_variables()
+        cerrar_personal()
+    except:
+        print()
+
+def abrir_personal():
+    personal_screen()
+    try:
+        cerrar_variables()
+        cerrar_reglas()
+    except:
+        print()
+
+def cerrar_personal():
+    pID.place_forget()
+    pNombre.place_forget()
+    pApellido.place_forget()
+    pCorreo.place_forget()
+    pRol.place_forget()
+    pUsuario.place_forget()
+    pContraseña.place_forget()
+
+    lblpTitle.place_forget()
+    lblpID.place_forget()
+    lblpNombre.place_forget()
+    lblpApellido.place_forget()
+    lblpCorreo.place_forget()
+    lblpRol.place_forget()
+    lblpUsuario.place_forget()
+    lblpContraseña.place_forget()
+
+    bpBuscar.place_forget()
+    bpModificar.place_forget()
+    bpLimpiar.place_forget()
+    bpGuardar.place_forget()
+    bpAgregar.place_forget()
+    bpActualizar.place_forget()
+
+    tabla_personal.place_forget()
 
 def cerrar_variables():
     cVID.place_forget()
@@ -1365,8 +1446,6 @@ def cerrar_reglas():
     crCondicion2.place_forget()
     crCondicion3.place_forget()
     crCondicion4.place_forget()
-    crCondicion5.place_forget()
-    crCondicion6.place_forget()
     crRegla.place_forget()
 
     lblReglas.place_forget()
@@ -1376,8 +1455,6 @@ def cerrar_reglas():
     lblc2.place_forget()
     lblc3.place_forget()
     lblc4.place_forget()
-    lblc5.place_forget()
-    lblc6.place_forget()
 
     brBuscar.place_forget()
     brModificar.place_forget()
@@ -1391,8 +1468,8 @@ def mostrar_reglas():
 
     miCursor = miConexion.cursor()
 
-    miCursor.execute("""SELECT ID_Regla, Condicion1, Condicion2, Condicion3, Condicion4, Condicion5, Condicion6, Regla FROM REGLAS
-                    WHERE ID_Regla=6""")
+    miCursor.execute("""SELECT ID_Regla, Condicion1, Condicion2, Condicion3, Condicion4, Regla FROM REGLAS
+                    WHERE ID_Regla=1""")
 
     ex_reglas=miCursor.fetchall()
     l_reglas,*nada=ex_reglas
@@ -1403,22 +1480,16 @@ def mostrar_reglas():
     c2=l_reglas[2]
     c3=l_reglas[3]
     c4=l_reglas[4]
-    c5=l_reglas[5]
-    c6=l_reglas[6]
-    regla_out=l_reglas[7]
+    regla_out=l_reglas[5]
 
 mostrar_reglas()
 
 def obtener_variablesC():
-    global variable1,variable2,variable3,variable4,variable5,variable6
+    global variable1,variable2,variable3,variable4
     variable1 = cVar1.get()
     variable2 = cVar2.get()
     variable3 = cVar3.get()
     variable4 = cVar4.get()
-    variable5 = cVar5.get()
-    variable6 = cVar6.get()
-
-
 
 # SKFUZZY
 
@@ -1435,22 +1506,20 @@ x_variable3 = np.arange(v3val1Par1, v3val3Par4, 1)
 # Rango del porcentaje de tiempo (meses)
 x_variable4 = np.arange(v4val1Par1, v4val3Par4, 1)
 
-# Rango del porcentaje de hijos (cantidad)
-x_variable5 = np.arange(v5val1Par1, v5val3Par4, 1)
-
-# Rango del porcentaje de deudas (semanas)
-x_variable6 = np.arange(v6val1Par1, v6val3Par3, 1)
-
 # Rango del porcentaje de préstamo (soles)
 x_prestamo = np.arange(500, 50000, 1)
+
+x_porc_prestamo=np.arange(0,100,1)
+
+x_porc_riesgo=np.arange(0,100,1)
 
 #CREACION DE VARIABLES DE ENTRADA(ANTECEDENT) y SALIDA(CONSEQUENT)
 var1=ctrl.Antecedent(x_variable1, NVariable1)
 var2=ctrl.Antecedent(x_variable2, NVariable2)
 var3=ctrl.Antecedent(x_variable3, NVariable3)
 var4=ctrl.Antecedent(x_variable4, NVariable4)
-var5=ctrl.Antecedent(x_variable5, NVariable5)
-var6=ctrl.Antecedent(x_variable6, NVariable6)
+varE=ctrl.Antecedent(x_porc_prestamo,"Porcentaje_Prestamo")
+varS=ctrl.Consequent(x_porc_riesgo,"Riesgo")
 prestamo=ctrl.Consequent(x_prestamo,'prestamo')
 
 # Ingreso Bajo
@@ -1459,6 +1528,22 @@ v1_val1 = fuzz.trapmf(x_variable1, [v1val1Par1, v1val1Par2, v1val1Par3, v1val1Pa
 v1_val2 = fuzz.trimf(x_variable1, [v1val2Par1, v1val2Par2, v1val2Par3])
 # Ingreso Alto
 v1_val3 = fuzz.trapmf(x_variable1, [v1val3Par1, v1val3Par2, v1val3Par3, v1val3Par4])
+
+vE_val1 = fuzz.trapmf(x_porc_prestamo,[0,0,15,45])
+vE_val2 = fuzz.trimf(x_porc_prestamo,[30,45,60])
+vE_val3 = fuzz.trapmf(x_porc_prestamo,[50,75,100,100])
+
+vS_val1 = fuzz.trapmf(x_porc_riesgo,[0,0,10,25])
+vS_val2 = fuzz.trimf(x_porc_riesgo,[5,30,60])
+vS_val3 = fuzz.trapmf(x_porc_riesgo,[45,55,100,100])
+
+varE['BAJO']=vE_val1
+varE['MEDIO']=vE_val2
+varE['ALTO']=vE_val3
+
+varS['BAJO']=vS_val1
+varS['MEDIO']=vS_val2
+varS['ALTO']=vS_val3
 
 #Reasignacion de variables
 var1[var1val1]=v1_val1
@@ -1571,64 +1656,6 @@ def grafVar4():
     toolbar.place(x=333, y=375)
     toolbar.update()
 
-# Hijos bajo
-v5_val1 = fuzz.trapmf(x_variable5, [v5val1Par1, v5val1Par2, v5val1Par3, v5val1Par4])
-# Hijos moderado
-v5_val2 = fuzz.trimf(x_variable5,  [v5val2Par1, v5val2Par2, v5val2Par3])
-# Hijos alto
-v5_val3 = fuzz.trapmf(x_variable5, [v5val3Par1, v5val3Par2,v5val3Par3, v5val3Par4])
-
-#Reasignacion de variables
-var5[var5val1]=v5_val1
-var5[var5val2]=v5_val2
-var5[var5val3]=v5_val3
-
-def grafVar5():
-    figHi, ax4 = plt.subplots(figsize=(5.5, 3))
-
-    ax4.plot(x_variable5, v5_val1, 'r', linewidth=2, label=var5val1)
-    ax4.plot(x_variable5, v5_val2, 'g', linewidth=2, label=var5val2)
-    ax4.plot(x_variable5, v5_val3, 'b', linewidth=2, label=var5val3)
-    ax4.set_title(NVariable5)
-    ax4.legend()
-
-    canvas = FigureCanvasTkAgg(figHi, master=ventana)
-    canvas.draw()
-    canvas.get_tk_widget().place(x=333, y=75)
-
-    toolbar = NavigationToolbar2Tk(canvas, ventana)
-    toolbar.place(x=333, y=375)
-    toolbar.update()
-
-# Deudas bajas
-v6_val1 = fuzz.trimf(x_variable6, [v6val1Par1, v6val1Par2, v6val1Par3])
-# Deudas medio
-v6_val2 = fuzz.trimf(x_variable6, [v6val2Par1, v6val2Par2, v6val2Par3])
-# Deudas alto
-v6_val3 = fuzz.trimf(x_variable6, [v6val3Par1, v6val3Par2, v6val3Par3])
-
-#Reasignacion de variables
-var6[var6val1]=v6_val1
-var6[var6val2]=v6_val2
-var6[var6val3]=v6_val3
-
-def grafVar6():
-    figDe, ax5 = plt.subplots(figsize=(5.5, 3))
-
-    ax5.plot(x_variable6, v6_val1, 'r', linewidth=2, label=var6val1)
-    ax5.plot(x_variable6, v6_val2, 'g', linewidth=2, label=var6val2)
-    ax5.plot(x_variable6, v6_val3, 'b', linewidth=2, label=var6val3)
-    ax5.set_title(NVariable6)
-    ax5.legend()
-
-    canvas = FigureCanvasTkAgg(figDe, master=ventana)
-    canvas.draw()
-    canvas.get_tk_widget().place(x=333, y=75)
-
-    toolbar = NavigationToolbar2Tk(canvas, ventana)
-    toolbar.place(x=333, y=375)
-    toolbar.update()
-
 # Préstamo bajas
 pr_ba = fuzz.trimf(x_prestamo, [500, 500, 7500])
 # Préstamo medio
@@ -1639,13 +1666,13 @@ pr_al = fuzz.trimf(x_prestamo, [25000, 50000, 50000])
 #Reasignacion de variables
 prestamo['BAJA']=pr_ba
 prestamo['MEDIO']=pr_me
-prestamo['ALTA']=pr_al
+prestamo['ALTO']=pr_al
 
 def grafPrestamo():
     figPr, ax6 = plt.subplots(figsize=(5.5, 3))
     ax6.plot(x_prestamo, pr_ba, 'r', linewidth=2, label='BAJA')
     ax6.plot(x_prestamo, pr_me, 'g', linewidth=2, label='MEDIO')
-    ax6.plot(x_prestamo, pr_al, 'b', linewidth=2, label='ALTA')
+    ax6.plot(x_prestamo, pr_al, 'b', linewidth=2, label='ALTO')
     ax6.set_title("Préstamo")
     ax6.legend()
 
@@ -1657,11 +1684,23 @@ def grafPrestamo():
     toolbar.place(x=333, y=375)
     toolbar.update()
 
-"""def clientevarsalida():
-    plt.plot([prestamos, prestamos], [0.0, 1.0], linestyle="--")
-    plt.plot(prestamos, pr_ba)
-    plt.plot(prestamos, pr_me)
-    plt.plot(prestamos, pr_al)"""
+def definir_reglas_riesgo():
+    global rule1,rule2,rule3,rule4,rule5,rule6,rule7,rule8,rule9,control_riesgo,controlar_riesgo
+
+    rule1 = ctrl.Rule(varE['BAJO'] & var2[var2val1],varS['BAJO'])
+    rule2 = ctrl.Rule(varE['BAJO'] & var2[var2val3],varS['MEDIO'])
+    rule3 = ctrl.Rule(varE['BAJO'] & var2[var2val2], varS['BAJO'])
+    rule4 = ctrl.Rule(varE['MEDIO'] & var2[var2val1], varS['MEDIO'])
+    rule5 = ctrl.Rule(varE['MEDIO'] & var2[var2val2], varS['MEDIO'])
+    rule6 = ctrl.Rule(varE['MEDIO'] & var2[var2val3], varS['ALTO'])
+    rule7 = ctrl.Rule(varE['ALTO'] & var2[var2val1], varS['ALTO'])
+    rule8 = ctrl.Rule(varE['ALTO'] & var2[var2val2], varS['ALTO'])
+    rule9 = ctrl.Rule(varE['ALTO'] & var2[var2val3], varS['ALTO'])
+
+    control_riesgo=ctrl.ControlSystem([rule1,rule2,rule3,rule4,rule5,rule6,rule7,rule8,rule9])
+    controlar_riesgo=ctrl.ControlSystemSimulation(control_riesgo)
+
+definir_reglas_riesgo()
 
 def definir_reglas():
     global regla1,regla2,regla3,regla4,regla5,regla6,regla7,regla8,regla9,regla10,regla11,regla12,regla13,regla14,\
@@ -1669,2207 +1708,90 @@ def definir_reglas():
             regla29,regla30,regla31,regla32,regla33,regla34,regla35,regla36,regla37,regla38,regla39,regla40,regla41,regla42,\
             regla43,regla44,regla45,regla46,regla47,regla48,regla49,regla50,regla51,regla52,regla53,regla54,regla55,regla56,\
             regla57,regla58,regla59,regla60,regla61,regla62,regla63,regla64,regla65,regla66,regla67,regla68,regla69,regla70,\
-            regla71,regla72,regla73,regla74,regla75,regla76,regla77,regla78,regla79,regla80,regla81,regla82,regla83,regla84,\
-            regla85,regla86,regla87,regla88,regla89,regla90,regla91,regla92,regla93,regla94,regla95,regla96,regla97,regla98,\
-            regla99,regla100,regla101,regla102,regla103,regla104,regla105,regla106,regla107,regla108,regla109,regla110,regla111,regla112,\
-            regla113,regla114,regla115,regla116,regla117,regla118,regla119,regla120,regla121,regla122,regla123,regla124,regla125,regla126,\
-            regla127,regla128,regla129,regla130,regla131,regla132,regla133,regla134,regla135,regla136,regla137,regla138,regla139,regla140,\
-            regla141,regla142,regla143,regla144,regla145,regla146,regla147,regla148,regla149,regla150,regla151,regla152,regla153,regla154,\
-            regla155,regla156,regla157,regla158,regla159,regla160,regla161,regla162,regla163,regla164,regla165,regla166,regla167,regla168,\
-            regla169,regla170,regla171,regla172,regla173,regla174,regla175,regla176,regla177,regla178,regla179,regla180,regla181,regla182,\
-            regla183,regla184,regla185,regla186,regla187,regla188,regla189,regla190,regla191,regla192,regla193,regla194,regla195,regla196,\
-            regla197,regla198,regla199,regla200,regla201,regla202,regla203,regla204,regla205,regla206,regla207,regla208,regla209,regla210,\
-            regla211,regla212,regla213,regla214,regla215,regla216,regla217,regla218,regla219,regla220,regla221,regla222,regla223,regla224,\
-            regla225,regla226,regla227,regla228,regla229,regla230,regla231,regla232,regla233,regla234,regla235,regla236,regla237,regla238,\
-            regla239,regla240,regla241,regla242,regla243
+            regla71,regla72,regla73,regla74,regla75,regla76,regla77,regla78,regla79,regla80,regla81
 
-    regla1 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla2 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla3 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['BAJA'])
-    regla4 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla5 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['BAJA'])
-    regla6 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['BAJA'])
-    regla7 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['BAJA'])
-    regla8 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['BAJA'])
-    regla9 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla10 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla11 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla12 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['BAJA'])
-    regla13 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla14 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['BAJA'])
-    regla15 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla16 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['BAJA'])
-    regla17 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla18 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla19 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla20 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla21 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla22 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla23 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla24 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla25 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla26 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla27 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla28 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla29 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla30 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['BAJA'])
-    regla31 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla32 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['BAJA'])
-    regla33 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla34 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['BAJA'])
-    regla35 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla36 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla37 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla38 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla39 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla40 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla41 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla42 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla43 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla44 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla45 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla46 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla47 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla48 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla49 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla50 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla51 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla52 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla53 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla54 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla55 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla56 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla57 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla58 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla59 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla60 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla61 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla62 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla63 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla64 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla65 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla66 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla67 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla68 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla69 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla70 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla71 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla72 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla73 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla74 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla75 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla76 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla77 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla78 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla79 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla80 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla81 = ctrl.Rule(
-        var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla82 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla83 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla84 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['BAJA'])
-    regla85 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla86 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['BAJA'])
-    regla87 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla88 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['BAJA'])
-    regla89 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla90 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla91 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla92 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla93 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla94 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla95 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla96 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla97 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla98 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla99 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla100 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla101 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla102 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla103 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla104 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla105 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla106 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla107 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla108 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla109 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla110 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla111 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla112 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla113 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla114 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla115 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla116 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla117 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla118 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla119 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla120 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla121 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla122 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla123 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla124 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla125 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla126 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla127 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla128 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla129 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla130 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla131 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla132 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla133 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla134 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla135 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla136 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla137 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla138 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla139 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla140 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla141 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla142 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla143 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla144 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla145 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla146 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla147 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla148 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla149 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla150 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla151 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla152 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla153 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla154 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla155 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla156 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla157 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla158 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla159 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla160 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla161 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla162 = ctrl.Rule(
-        var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla163 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla164 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla165 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla166 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla167 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla168 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla169 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla170 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla171 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla172 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla173 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla174 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla175 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla176 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla177 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla178 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla179 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla180 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla181 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla182 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla183 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla184 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla185 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla186 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla187 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla188 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla189 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla190 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla191 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla192 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla193 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla194 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla195 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla196 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla197 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla198 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla199 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla200 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla201 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla202 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla203 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla204 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla205 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla206 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla207 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla208 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla209 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla210 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla211 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla212 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla213 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla214 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla215 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla216 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla217 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla218 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla219 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla220 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla221 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla222 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla223 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla224 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla225 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla226 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla227 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla228 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla229 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla230 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla231 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla232 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla233 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla234 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla235 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla236 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla237 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla238 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla239 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla240 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla241 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla242 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla243 = ctrl.Rule(
-        var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla244 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla245 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla246 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['BAJA'])
-    regla247 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla248 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['BAJA'])
-    regla249 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla250 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['BAJA'])
-    regla251 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla252 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla253 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla254 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla255 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla256 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla257 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla258 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla259 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla260 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla261 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla262 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla263 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla264 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla265 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla266 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla267 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla268 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla269 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla270 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla271 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla272 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla273 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla274 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla275 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla276 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla277 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla278 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla279 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla280 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla281 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla282 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla283 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla284 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla285 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla286 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla287 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla288 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla289 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla290 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla291 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla292 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla293 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla294 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla295 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla296 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla297 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla298 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla299 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla300 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla301 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla302 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla303 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla304 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla305 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla306 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla307 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla308 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla309 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla310 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla311 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla312 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla313 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla314 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla315 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla316 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla317 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla318 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla319 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla320 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla321 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla322 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla323 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla324 = ctrl.Rule(
-        var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla325 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla326 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla327 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla328 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla329 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla330 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla331 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla332 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla333 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla334 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla335 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla336 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla337 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla338 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla339 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla340 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla341 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla342 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla343 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla344 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla345 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla346 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla347 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla348 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla349 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla350 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla351 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla352 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla353 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla354 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla355 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla356 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla357 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla358 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla359 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla360 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla361 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla362 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla363 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla364 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla365 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla366 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla367 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla368 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla369 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla370 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla371 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla372 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla373 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla374 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla375 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla376 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla377 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla378 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla379 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla380 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla381 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla382 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla383 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla384 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla385 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla386 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla387 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla388 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla389 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla390 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla391 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla392 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla393 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla394 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla395 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla396 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla397 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla398 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla399 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla400 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla401 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla402 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla403 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla404 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla405 = ctrl.Rule(
-        var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla406 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla407 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla408 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla409 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla410 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla411 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla412 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla413 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla414 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla415 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla416 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla417 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla418 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla419 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla420 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla421 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla422 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla423 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla424 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla425 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla426 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla427 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla428 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla429 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla430 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla431 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla432 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla433 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla434 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla435 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla436 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla437 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla438 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla439 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla440 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla441 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla442 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla443 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla444 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla445 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla446 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla447 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla448 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla449 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla450 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla451 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla452 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla453 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla454 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla455 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla456 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla457 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla458 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla459 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla460 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla461 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla462 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla463 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla464 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla465 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla466 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla467 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla468 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla469 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla470 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla471 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla472 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla473 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla474 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla475 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla476 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla477 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla478 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla479 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla480 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['ALTA'])
-    regla481 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla482 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['ALTA'])
-    regla483 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla484 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['ALTA'])
-    regla485 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla486 = ctrl.Rule(
-        var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla487 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla488 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['BAJA'])
-    regla489 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla490 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['BAJA'])
-    regla491 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla492 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla493 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla494 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla495 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla496 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla497 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla498 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla499 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla500 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla501 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla502 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla503 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla504 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla505 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla506 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla507 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla508 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla509 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla510 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla511 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla512 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla513 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla514 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla515 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla516 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla517 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla518 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla519 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla520 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla521 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla522 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla523 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla524 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla525 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla526 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla527 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla528 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla529 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla530 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla531 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla532 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla533 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla534 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla535 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla536 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla537 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla538 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla539 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla540 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla541 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla542 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla543 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla544 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla545 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla546 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla547 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla548 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla549 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla550 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla551 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla552 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla553 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla554 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla555 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla556 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla557 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla558 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla559 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla560 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla561 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla562 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla563 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla564 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla565 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla566 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla567 = ctrl.Rule(
-        var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla568 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['BAJA'])
-    regla569 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla570 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla571 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla572 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla573 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla574 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla575 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla576 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla577 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla578 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla579 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla580 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla581 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla582 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla583 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla584 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla585 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla586 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla587 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla588 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla589 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla590 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla591 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla592 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla593 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla594 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla595 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla596 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla597 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla598 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla599 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla600 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla601 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla602 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla603 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla604 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla605 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla606 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla607 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla608 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla609 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla610 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla611 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla612 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla613 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla614 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla615 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla616 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla617 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla618 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla619 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla620 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla621 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla622 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla623 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla624 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla625 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla626 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla627 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla628 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla629 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla630 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla631 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla632 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla633 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla634 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla635 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla636 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla637 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla638 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla639 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla640 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla641 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla642 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['ALTA'])
-    regla643 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla644 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['ALTA'])
-    regla645 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla646 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['ALTA'])
-    regla647 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla648 = ctrl.Rule(
-        var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla649 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla650 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla651 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla652 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla653 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla654 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla655 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla656 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla657 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla658 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla659 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla660 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla661 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla662 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla663 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla664 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla665 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla666 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla667 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla668 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla669 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla670 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla671 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla672 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla673 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla674 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla675 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla676 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla677 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla678 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla679 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla680 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla681 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla682 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla683 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla684 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla685 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla686 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla687 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla688 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla689 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla690 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla691 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla692 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla693 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla694 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla695 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla696 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['ALTA'])
-    regla697 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla698 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['ALTA'])
-    regla699 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla700 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['ALTA'])
-    regla701 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla702 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla703 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla704 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla705 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val1] & var6[var6val3],
-        prestamo['MEDIO'])
-    regla706 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla707 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla708 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla709 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla710 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla711 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val1] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla712 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla713 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val2],
-        prestamo['MEDIO'])
-    regla714 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val1] & var6[var6val3],
-        prestamo['ALTA'])
-    regla715 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla716 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val2],
-        prestamo['ALTA'])
-    regla717 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla718 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val1],
-        prestamo['ALTA'])
-    regla719 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla720 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val2] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
-    regla721 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val1],
-        prestamo['MEDIO'])
-    regla722 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val2],
-        prestamo['ALTA'])
-    regla723 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val1] & var6[var6val3],
-        prestamo['ALTA'])
-    regla724 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val1],
-        prestamo['ALTA'])
-    regla725 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val2],
-        prestamo['ALTA'])
-    regla726 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val2] & var6[var6val3],
-        prestamo['ALTA'])
-    regla727 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val1],
-        prestamo['ALTA'])
-    regla728 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val2],
-        prestamo['ALTA'])
-    regla729 = ctrl.Rule(
-        var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val3] & var5[var5val3] & var6[var6val3],
-        prestamo['ALTA'])
+    regla1 = ctrl.Rule(var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val1], prestamo['BAJA'])
+    regla2 = ctrl.Rule(var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val2], prestamo['BAJA'])
+    regla3 = ctrl.Rule(var1[var1val1] & var2[var2val1] & var3[var3val1] & var4[var4val3], prestamo['BAJA'])
+    regla4 = ctrl.Rule(var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val1], prestamo['BAJA'])
+    regla5 = ctrl.Rule(var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val2], prestamo['BAJA'])
+    regla6 = ctrl.Rule(var1[var1val1] & var2[var2val1] & var3[var3val2] & var4[var4val3], prestamo['MEDIO'])
+    regla7 = ctrl.Rule(var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val1], prestamo['BAJA'])
+    regla8 = ctrl.Rule(var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val2], prestamo['MEDIO'])
+    regla9 = ctrl.Rule(var1[var1val1] & var2[var2val1] & var3[var3val3] & var4[var4val3], prestamo['MEDIO'])
+    regla10 = ctrl.Rule(var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val1], prestamo['BAJA'])
+    regla11 = ctrl.Rule(var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val2], prestamo['BAJA'])
+    regla12 = ctrl.Rule(var1[var1val1] & var2[var2val2] & var3[var3val1] & var4[var4val3], prestamo['MEDIO'])
+    regla13 = ctrl.Rule(var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val1], prestamo['BAJA'])
+    regla14 = ctrl.Rule(var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val2], prestamo['MEDIO'])
+    regla15 = ctrl.Rule(var1[var1val1] & var2[var2val2] & var3[var3val2] & var4[var4val3], prestamo['MEDIO'])
+    regla16 = ctrl.Rule(var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val1], prestamo['MEDIO'])
+    regla17 = ctrl.Rule(var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val2], prestamo['MEDIO'])
+    regla18 = ctrl.Rule(var1[var1val1] & var2[var2val2] & var3[var3val3] & var4[var4val3], prestamo['MEDIO'])
+    regla19 = ctrl.Rule(var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val1], prestamo['BAJA'])
+    regla20 = ctrl.Rule(var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val2], prestamo['MEDIO'])
+    regla21 = ctrl.Rule(var1[var1val1] & var2[var2val3] & var3[var3val1] & var4[var4val3], prestamo['MEDIO'])
+    regla22 = ctrl.Rule(var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val1], prestamo['MEDIO'])
+    regla23 = ctrl.Rule(var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val2], prestamo['MEDIO'])
+    regla24 = ctrl.Rule(var1[var1val1] & var2[var2val3] & var3[var3val2] & var4[var4val3], prestamo['MEDIO'])
+    regla25 = ctrl.Rule(var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val1], prestamo['MEDIO'])
+    regla26 = ctrl.Rule(var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val2], prestamo['MEDIO'])
+    regla27 = ctrl.Rule(var1[var1val1] & var2[var2val3] & var3[var3val3] & var4[var4val3], prestamo['ALTO'])
+    regla28 = ctrl.Rule(var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val1], prestamo['BAJA'])
+    regla29 = ctrl.Rule(var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val2], prestamo['BAJA'])
+    regla30 = ctrl.Rule(var1[var1val2] & var2[var2val1] & var3[var3val1] & var4[var4val3], prestamo['MEDIO'])
+    regla31 = ctrl.Rule(var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val1], prestamo['BAJA'])
+    regla32 = ctrl.Rule(var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val2], prestamo['MEDIO'])
+    regla33 = ctrl.Rule(var1[var1val2] & var2[var2val1] & var3[var3val2] & var4[var4val3], prestamo['MEDIO'])
+    regla34 = ctrl.Rule(var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val1], prestamo['MEDIO'])
+    regla35 = ctrl.Rule(var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val2], prestamo['MEDIO'])
+    regla36 = ctrl.Rule(var1[var1val2] & var2[var2val1] & var3[var3val3] & var4[var4val3], prestamo['MEDIO'])
+    regla37 = ctrl.Rule(var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val1], prestamo['BAJA'])
+    regla38 = ctrl.Rule(var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val2], prestamo['MEDIO'])
+    regla39 = ctrl.Rule(var1[var1val2] & var2[var2val2] & var3[var3val1] & var4[var4val3], prestamo['MEDIO'])
+    regla40 = ctrl.Rule(var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val1], prestamo['MEDIO'])
+    regla41 = ctrl.Rule(var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val2], prestamo['MEDIO'])
+    regla42 = ctrl.Rule(var1[var1val2] & var2[var2val2] & var3[var3val2] & var4[var4val3], prestamo['MEDIO'])
+    regla43 = ctrl.Rule(var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val1], prestamo['MEDIO'])
+    regla44 = ctrl.Rule(var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val2], prestamo['MEDIO'])
+    regla45 = ctrl.Rule(var1[var1val2] & var2[var2val2] & var3[var3val3] & var4[var4val3], prestamo['ALTO'])
+    regla46 = ctrl.Rule(var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val1], prestamo['MEDIO'])
+    regla47 = ctrl.Rule(var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val2], prestamo['MEDIO'])
+    regla48 = ctrl.Rule(var1[var1val2] & var2[var2val3] & var3[var3val1] & var4[var4val3], prestamo['MEDIO'])
+    regla49 = ctrl.Rule(var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val1], prestamo['MEDIO'])
+    regla50 = ctrl.Rule(var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val2], prestamo['MEDIO'])
+    regla51 = ctrl.Rule(var1[var1val2] & var2[var2val3] & var3[var3val2] & var4[var4val3], prestamo['ALTO'])
+    regla52 = ctrl.Rule(var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val1], prestamo['MEDIO'])
+    regla53 = ctrl.Rule(var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val2], prestamo['ALTO'])
+    regla54 = ctrl.Rule(var1[var1val2] & var2[var2val3] & var3[var3val3] & var4[var4val3], prestamo['ALTO'])
+    regla55 = ctrl.Rule(var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val1], prestamo['BAJA'])
+    regla56 = ctrl.Rule(var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val2], prestamo['MEDIO'])
+    regla57 = ctrl.Rule(var1[var1val3] & var2[var2val1] & var3[var3val1] & var4[var4val3], prestamo['MEDIO'])
+    regla58 = ctrl.Rule(var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val1], prestamo['MEDIO'])
+    regla59 = ctrl.Rule(var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val2], prestamo['MEDIO'])
+    regla60 = ctrl.Rule(var1[var1val3] & var2[var2val1] & var3[var3val2] & var4[var4val3], prestamo['MEDIO'])
+    regla61 = ctrl.Rule(var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val1], prestamo['MEDIO'])
+    regla62 = ctrl.Rule(var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val2], prestamo['MEDIO'])
+    regla63 = ctrl.Rule(var1[var1val3] & var2[var2val1] & var3[var3val3] & var4[var4val3], prestamo['ALTO'])
+    regla64 = ctrl.Rule(var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val1], prestamo['MEDIO'])
+    regla65 = ctrl.Rule(var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val2], prestamo['MEDIO'])
+    regla66 = ctrl.Rule(var1[var1val3] & var2[var2val2] & var3[var3val1] & var4[var4val3], prestamo['MEDIO'])
+    regla67 = ctrl.Rule(var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val1], prestamo['MEDIO'])
+    regla68 = ctrl.Rule(var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val2], prestamo['MEDIO'])
+    regla69 = ctrl.Rule(var1[var1val3] & var2[var2val2] & var3[var3val2] & var4[var4val3], prestamo['ALTO'])
+    regla70 = ctrl.Rule(var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val1], prestamo['MEDIO'])
+    regla71 = ctrl.Rule(var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val2], prestamo['ALTO'])
+    regla72 = ctrl.Rule(var1[var1val3] & var2[var2val2] & var3[var3val3] & var4[var4val3], prestamo['ALTO'])
+    regla73 = ctrl.Rule(var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val1], prestamo['MEDIO'])
+    regla74 = ctrl.Rule(var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val2], prestamo['MEDIO'])
+    regla75 = ctrl.Rule(var1[var1val3] & var2[var2val3] & var3[var3val1] & var4[var4val3], prestamo['ALTO'])
+    regla76 = ctrl.Rule(var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val1], prestamo['MEDIO'])
+    regla77 = ctrl.Rule(var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val2], prestamo['ALTO'])
+    regla78 = ctrl.Rule(var1[var1val3] & var2[var2val3] & var3[var3val2] & var4[var4val3], prestamo['ALTO'])
+    regla79 = ctrl.Rule(var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val1], prestamo['ALTO'])
+    regla80 = ctrl.Rule(var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val2], prestamo['ALTO'])
+    regla81 = ctrl.Rule(var1[var1val3] & var2[var2val3] & var3[var3val3] & var4[var4val3], prestamo['ALTO'])
+
 
 definir_reglas()
 control = ctrl.ControlSystem(
@@ -3878,19 +1800,8 @@ control = ctrl.ControlSystem(
             regla29,regla30,regla31,regla32,regla33,regla34,regla35,regla36,regla37,regla38,regla39,regla40,regla41,regla42,\
             regla43,regla44,regla45,regla46,regla47,regla48,regla49,regla50,regla51,regla52,regla53,regla54,regla55,regla56,\
             regla57,regla58,regla59,regla60,regla61,regla62,regla63,regla64,regla65,regla66,regla67,regla68,regla69,regla70,\
-            regla71,regla72,regla73,regla74,regla75,regla76,regla77,regla78,regla79,regla80,regla81,regla82,regla83,regla84,\
-            regla85,regla86,regla87,regla88,regla89,regla90,regla91,regla92,regla93,regla94,regla95,regla96,regla97,regla98,\
-            regla99,regla100,regla101,regla102,regla103,regla104,regla105,regla106,regla107,regla108,regla109,regla110,regla111,regla112,\
-            regla113,regla114,regla115,regla116,regla117,regla118,regla119,regla120,regla121,regla122,regla123,regla124,regla125,regla126,\
-            regla127,regla128,regla129,regla130,regla131,regla132,regla133,regla134,regla135,regla136,regla137,regla138,regla139,regla140,\
-            regla141,regla142,regla143,regla144,regla145,regla146,regla147,regla148,regla149,regla150,regla151,regla152,regla153,regla154,\
-            regla155,regla156,regla157,regla158,regla159,regla160,regla161,regla162,regla163,regla164,regla165,regla166,regla167,regla168,\
-            regla169,regla170,regla171,regla172,regla173,regla174,regla175,regla176,regla177,regla178,regla179,regla180,regla181,regla182,\
-            regla183,regla184,regla185,regla186,regla187,regla188,regla189,regla190,regla191,regla192,regla193,regla194,regla195,regla196,\
-            regla197,regla198,regla199,regla200,regla201,regla202,regla203,regla204,regla205,regla206,regla207,regla208,regla209,regla210,\
-            regla211,regla212,regla213,regla214,regla215,regla216,regla217,regla218,regla219,regla220,regla221,regla222,regla223,regla224,\
-            regla225,regla226,regla227,regla228,regla229,regla230,regla231,regla232,regla233,regla234,regla235,regla236,regla237,regla238,\
-            regla239,regla240,regla241,regla242,regla243])
+            regla71,regla72,regla73,regla74,regla75,regla76,regla77,regla78,regla79,regla80,regla81])
+
 controlar = ctrl.ControlSystemSimulation(control)
 plt.show()
 
@@ -3901,27 +1812,376 @@ def evaluar_prest():
     controlar.input[NVariable2] = int(variable2)
     controlar.input[NVariable3] = int(variable3)
     controlar.input[NVariable4] = int(variable4)
-    controlar.input[NVariable5] = int(variable5)
-    controlar.input[NVariable6] = int(variable6)
     controlar.compute()
-    global resultado,cantPR,xa
+
+    global resultado,cantPR,cantLimite,round_resultado
     resultado=controlar.output['prestamo']
-    lblResp.configure(text=str(round(resultado, 2)))
+    round_resultado=round(resultado,2)
+    cantLimite=float(resultado)*2
+    print(resultado)
+    print(cantLimite)
+    lblResp.configure(text=str(round_resultado))
+    cLimit.configure(text=str(round(cantLimite,2)))
     prestamo.view(sim=controlar)
-    x=round((resultado/50000)*100,2)
-    print("Porcentaje de prestamo limite: ",x,"%")
-    #--------------
-    #Cantidad limite
-    #resultado
-    #Cantidad de Prestamo
-def calcular_prc_prestamo():
-    #cantidad de prestamo para el cliente
-    cantPR=lblCantPr.get()
-    #CantidaLimite
-    cantLimite=float(cantPR)*2
 
-    porcentajePR=round(float(cantLimite)/float(resultado)*100,2)
-    print("Porcentaje de prestamo: ",porcentajePR,"%")
+def comprobar_valores():
+    global porcentajePR
+    # cantidad de prestamo para el cliente
+    cantPR = lblCantPr.get()
 
+    porcentajePR = round(float(cantPR) / float(round_resultado) * 100, 2)
+
+    if (float(cantPR) > cantLimite):
+        messagebox.showerror("ERROR","El prestamo excede en el limite.")
+    elif (float(cantPR) < 500):
+        messagebox.showerror("ERROR", "La cantidad a prestar es muy baja.")
+    else:
+        calcular_riesgo()
+        lblCantPr['state']=tk.DISABLED
+
+def calcular_riesgo():
+    global lblRiesgo,riesgo,lblpor
+    definir_reglas_riesgo()
+    controlar_riesgo.input['Porcentaje_Prestamo'] = porcentajePR
+    controlar_riesgo.input[NVariable2] = int(variable2)
+    controlar_riesgo.compute()
+    riesgo = controlar_riesgo.output['Riesgo']
+    print(porcentajePR)
+    print(riesgo)
+    print(variable3)
+    tRiesgo=tk.Label(ventana,text="RIESGO",bg="white",fg=Colors.ColorPrimary,font=font.Font(weight="bold"))
+    tRiesgo.place(x=720,y=440)
+    lblRiesgo=tk.Label(ventana,text="",bg="white",fg="red",font=font.Font(size=20,weight="bold"))
+    lblRiesgo.place(x=720,y=460)
+    lblpor = tk.Label(ventana, text="%", bg="white", fg="red", font=font.Font(size=20, weight="bold"))
+    lblpor.place(x=790, y=460)
+    bVerRiesgo=tk.Button(ventana,text="VER GRAFICA",bg=Colors.ColorSecundary,command=ver_riesgo)
+    bVerRiesgo.place(x=720, y=500)
+    lblRiesgo.configure(text=str(round(riesgo, 2)))
+    color_riesgo()
+
+def ver_riesgo():
+    varS.view(sim=controlar_riesgo)
+
+def color_riesgo():
+    if (riesgo < 35):
+        lblRiesgo['fg']="green"
+        lblpor['fg']="green"
+    elif (35 < riesgo < 50):
+        lblRiesgo['fg']="orange"
+        lblpor['fg'] = "orange"
+    else:
+        lblRiesgo['fg']="red"
+        lblpor['fg'] = "red"
+
+def ver_reglas():
+    if (cRegla == 'regla 1'):
+        regla1.view()
+        plt.show()
+    elif (cRegla == 'regla 2'):
+        regla2.view()
+        plt.show()
+    elif (cRegla == 'regla 3'):
+        regla3.view()
+        plt.show()
+    elif (cRegla == 'regla 4'):
+        regla4.view()
+        plt.show()
+    elif (cRegla == 'regla 5'):
+        regla5.view()
+        plt.show()
+    elif (cRegla == 'regla 6'):
+        regla6.view()
+        plt.show()
+    elif (cRegla == 'regla 7'):
+        regla7.view()
+        plt.show()
+    elif (cRegla == 'regla 8'):
+        regla8.view()
+        plt.show()
+    elif (cRegla == 'regla 9'):
+        regla9.view()
+        plt.show()
+    elif (cRegla == 'regla 10'):
+        regla10.view()
+        plt.show()
+    elif (cRegla == 'regla 11'):
+        regla11.view()
+        plt.show()
+    elif (cRegla == 'regla 12'):
+        regla12.view()
+        plt.show()
+    elif (cRegla == 'regla 13'):
+        regla13.view()
+        plt.show()
+    elif (cRegla == 'regla 14'):
+        regla14.view()
+        plt.show()
+    elif (cRegla == 'regla 15'):
+        regla15.view()
+        plt.show()
+    elif (cRegla == 'regla 16'):
+        regla16.view()
+        plt.show()
+    elif (cRegla == 'regla 17'):
+        regla17.view()
+        plt.show()
+    elif (cRegla == 'regla 18'):
+        regla18.view()
+        plt.show()
+    elif (cRegla == 'regla 19'):
+        regla19.view()
+        plt.show()
+    elif (cRegla == 'regla 20'):
+        regla20.view()
+        plt.show()
+    elif (cRegla == 'regla 21'):
+        regla21.view()
+        plt.show()
+    elif (cRegla == 'regla 22'):
+        regla22.view()
+        plt.show()
+    elif (cRegla == 'regla 23'):
+        regla23.view()
+        plt.show()
+    elif (cRegla == 'regla 24'):
+        regla24.view()
+        plt.show()
+    elif (cRegla == 'regla 25'):
+        regla25.view()
+        plt.show()
+    elif (cRegla == 'regla 26'):
+        regla26.view()
+        plt.show()
+    elif (cRegla == 'regla 27'):
+        regla27.view()
+        plt.show()
+    elif (cRegla == 'regla 28'):
+        regla28.view()
+        plt.show()
+    elif (cRegla == 'regla 29'):
+        regla29.view()
+        plt.show()
+    elif (cRegla == 'regla 30'):
+        regla30.view()
+        plt.show()
+    elif (cRegla == 'regla 31'):
+        regla31.view()
+        plt.show()
+    elif (cRegla == 'regla 32'):
+        regla32.view()
+        plt.show()
+    elif (cRegla == 'regla 33'):
+        regla33.view()
+        plt.show()
+    elif (cRegla == 'regla 34'):
+        regla34.view()
+        plt.show()
+    elif (cRegla == 'regla 35'):
+        regla35.view()
+        plt.show()
+    elif (cRegla == 'regla 36'):
+        regla36.view()
+        plt.show()
+    elif (cRegla == 'regla 37'):
+        regla37.view()
+        plt.show()
+    elif (cRegla == 'regla 38'):
+        regla38.view()
+        plt.show()
+    elif (cRegla == 'regla 39'):
+        regla39.view()
+        plt.show()
+    elif (cRegla == 'regla 40'):
+        regla40.view()
+        plt.show()
+    elif (cRegla == 'regla 41'):
+        regla41.view()
+        plt.show()
+    elif (cRegla == 'regla 42'):
+        regla42.view()
+        plt.show()
+    elif (cRegla == 'regla 43'):
+        regla43.view()
+        plt.show()
+    elif (cRegla == 'regla 44'):
+        regla44.view()
+        plt.show()
+    elif (cRegla == 'regla 45'):
+        regla45.view()
+        plt.show()
+    elif (cRegla == 'regla 46'):
+        regla46.view()
+        plt.show()
+    elif (cRegla == 'regla 47'):
+        regla47.view()
+        plt.show()
+    elif (cRegla == 'regla 48'):
+        regla48.view()
+        plt.show()
+    elif (cRegla == 'regla 49'):
+        regla49.view()
+        plt.show()
+    elif (cRegla == 'regla 50'):
+        regla50.view()
+        plt.show()
+    elif (cRegla == 'regla 51'):
+        regla51.view()
+        plt.show()
+    elif (cRegla == 'regla 52'):
+        regla52.view()
+        plt.show()
+    elif (cRegla == 'regla 53'):
+        regla53.view()
+        plt.show()
+    elif (cRegla == 'regla 54'):
+        regla54.view()
+        plt.show()
+    elif (cRegla == 'regla 55'):
+        regla55.view()
+        plt.show()
+    elif (cRegla == 'regla 56'):
+        regla56.view()
+        plt.show()
+    elif (cRegla == 'regla 57'):
+        regla57.view()
+        plt.show()
+    elif (cRegla == 'regla 58'):
+        regla58.view()
+        plt.show()
+    elif (cRegla == 'regla 59'):
+        regla59.view()
+        plt.show()
+    elif (cRegla == 'regla 60'):
+        regla60.view()
+        plt.show()
+    elif (cRegla == 'regla 61'):
+        regla61.view()
+        plt.show()
+    elif (cRegla == 'regla 62'):
+        regla62.view()
+        plt.show()
+    elif (cRegla == 'regla 63'):
+        regla63.view()
+        plt.show()
+    elif (cRegla == 'regla 64'):
+        regla64.view()
+        plt.show()
+    elif (cRegla == 'regla 65'):
+        regla65.view()
+        plt.show()
+    elif (cRegla == 'regla 66'):
+        regla66.view()
+        plt.show()
+    elif (cRegla == 'regla 67'):
+        regla67.view()
+        plt.show()
+    elif (cRegla == 'regla 68'):
+        regla68.view()
+        plt.show()
+    elif (cRegla == 'regla 69'):
+        regla69.view()
+        plt.show()
+    elif (cRegla == 'regla 70'):
+        regla70.view()
+        plt.show()
+    elif (cRegla == 'regla 71'):
+        regla71.view()
+        plt.show()
+    elif (cRegla == 'regla 72'):
+        regla72.view()
+        plt.show()
+    elif (cRegla == 'regla 73'):
+        regla73.view()
+        plt.show()
+    elif (cRegla == 'regla 74'):
+        regla74.view()
+        plt.show()
+    elif (cRegla == 'regla 75'):
+        regla75.view()
+        plt.show()
+    elif (cRegla == 'regla 76'):
+        regla76.view()
+        plt.show()
+    elif (cRegla == 'regla 77'):
+        regla77.view()
+        plt.show()
+    elif (cRegla == 'regla 78'):
+        regla78.view()
+        plt.show()
+    elif (cRegla == 'regla 79'):
+        regla79.view()
+        plt.show()
+    elif (cRegla == 'regla 80'):
+        regla80.view()
+        plt.show()
+    elif (cRegla == 'regla 81'):
+        regla81.view()
+        plt.show()
+    else:
+        messagebox.showerror("ERROR","La regla ingresada no existe!")
+
+def ver_reglas_riesgo():
+    if (cReglaRiesgo == 'regla 1'):
+        rule1.view()
+        plt.show()
+    elif (cReglaRiesgo == 'regla 2'):
+        rule2.view()
+        plt.show()
+    elif (cReglaRiesgo == 'regla 3'):
+        rule3.view()
+        plt.show()
+    elif (cReglaRiesgo == 'regla 4'):
+        rule4.view()
+        plt.show()
+    elif (cReglaRiesgo == 'regla 5'):
+        rule5.view()
+        plt.show()
+    elif (cReglaRiesgo == 'regla 6'):
+        rule6.view()
+        plt.show()
+    elif (cReglaRiesgo == 'regla 7'):
+        rule7.view()
+        plt.show()
+    elif (cReglaRiesgo == 'regla 8'):
+        rule8.view()
+        plt.show()
+    elif (cReglaRiesgo == 'regla 9'):
+        rule9.view()
+        plt.show()
+    else:
+        messagebox.showerror("ERROR","La regla ingresada no existe!")
+
+def definir_valor_x():
+    global cant
+    valor=easygui.enterbox("Ingrese la cantidad para el conjunto de entradas: Ejm: 21","VALOR")
+    cant=int(valor)
+def grafica_3d_riesgo():
+    definir_valor_x()
+    controlar_riesgo_3d = ctrl.ControlSystemSimulation(control_riesgo, flush_after_run=cant * cant + 1)
+    upsampled = np.linspace(1, 100, cant)
+    x, y = np.meshgrid(upsampled, upsampled)
+    z = np.zeros_like(x)
+    for i in range(cant):
+        for j in range(cant):
+            controlar_riesgo_3d.input['Porcentaje_Prestamo'] = x[i, j]
+            controlar_riesgo_3d.input[NVariable2] = y[i, j]
+            controlar_riesgo_3d.compute()
+            z[i, j] = controlar_riesgo_3d.output['Riesgo']
+
+    from mpl_toolkits.mplot3d import Axes3D  # Required for 3D plotting
+
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(111, projection='3d')
+
+    surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, cmap='viridis',
+                           linewidth=0.4, antialiased=True)
+
+    cset = ax.contourf(x, y, z, zdir='z', offset=-2.5, cmap='viridis', alpha=0.5)
+    cset = ax.contourf(x, y, z, zdir='x', offset=3, cmap='viridis', alpha=0.5)
+    cset = ax.contourf(x, y, z, zdir='y', offset=3, cmap='viridis', alpha=0.5)
+
+    ax.view_init(30, 200)
+    plt.show()
 
 ventana.mainloop()
