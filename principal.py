@@ -1335,9 +1335,6 @@ def abrir_variables():
     variables_screen()
     try:
         cerrar_reglas()
-    except:
-        print()
-    try:
         cerrar_personal()
     except:
         print()
@@ -1346,9 +1343,6 @@ def abrir_reglas():
     reglas_screen()
     try:
         cerrar_variables()
-    except:
-        print()
-    try:
         cerrar_personal()
     except:
         print()
@@ -1357,9 +1351,6 @@ def abrir_personal():
     personal_screen()
     try:
         cerrar_variables()
-    except:
-        print()
-    try:
         cerrar_reglas()
     except:
         print()
@@ -1418,7 +1409,7 @@ def cerrar_variables():
     cVal3Par1.place_forget()
     lblVariable.place_forget()
     lblID.place_forget()
-    lblNombreC.place_forget()
+    lblNombre.place_forget()
     lblTipo.place_forget()
     lblValorL.place_forget()
     lblFunPer.place_forget()
