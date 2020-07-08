@@ -1335,6 +1335,9 @@ def abrir_variables():
     variables_screen()
     try:
         cerrar_reglas()
+    except:
+        print()
+    try:
         cerrar_personal()
     except:
         print()
@@ -1343,6 +1346,9 @@ def abrir_reglas():
     reglas_screen()
     try:
         cerrar_variables()
+    except:
+        print()
+    try:
         cerrar_personal()
     except:
         print()
@@ -1351,6 +1357,9 @@ def abrir_personal():
     personal_screen()
     try:
         cerrar_variables()
+    except:
+        print()
+    try:
         cerrar_reglas()
     except:
         print()
