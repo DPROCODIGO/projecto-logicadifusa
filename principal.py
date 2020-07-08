@@ -334,34 +334,15 @@ def close_loginScreen():
 
 #FALTA PROGRAMAR
 def cerrar_sesion():
-    cVID.place_forget()
-    cVNombre.place_forget()
-    cVTipo.place_forget()
-    cValor1.place_forget()
-    cValor2.place_forget()
-    cValor3.place_forget()
-    cBValor1.place_forget()
-    cBValor2.place_forget()
-    cBValor3.place_forget()
-    cVal1Par1.place_forget()
-    cVal1Par2.place_forget()
-    cVal1Par3.place_forget()
-    cVal1Par4.place_forget()
-    cVal2Par1.place_forget()
-    cVal2Par2.place_forget()
-    cVal2Par3.place_forget()
-    cVal2Par4.place_forget()
-    cVal3Par1.place_forget()
-    cVal3Par2.place_forget()
-    cVal3Par3.place_forget()
-    cVal3Par4.place_forget()
-    bBuscar.place_forget()
-    bModificar.place_forget()
-    bLimpiar.place_forget()
-    bGuardar.place_forget()
-    bActualizar.place_forget()
-    table.place_forget()
-
+    emptyMenu = tk.Menu(ventana)
+    ventana.config(menu=emptyMenu)
+    try:
+        cerrar_reglas()
+        cerrar_variables()
+        cerrar_personal()
+    except:
+        print()
+    login_screen()
 
 def ingresar_admin():
     close_loginScreen()
@@ -665,7 +646,6 @@ def limpiarVar():
     micVal3Par4.set("")
     micVal2Par4.set("")
 
-
 def MenuBar():
     BarraMenu = tk.Menu(ventana)
     ventana.config(menu=BarraMenu)
@@ -763,6 +743,7 @@ login_screen()
 
 ##Menu
 def varEntradas():
+    global lblFormCliente,lblID
     lblFormCliente = tk.Label(ventana, text="DATOS DEL CLIENTE", font=FontTitle, bg=Colors.ColorWhite)
     lblFormCliente.place(x=40, y=50)
 
@@ -778,7 +759,8 @@ def varEntradas():
     milEFech_Nac = tk.StringVar()
     micEdad = tk.StringVar()
 
-    global cID, cDNI, lENombre, lEApellido, lEEMail, lECelular, lEFech_Nac
+    global cID, cDNI, lENombre, lEApellido, lEEMail, lECelular, lEFech_Nac,lblDNI,lblApellido,lblFech_Nac,lblFormEval,lblEmail,lblCelular
+    global bComprobar,bAgregar,bBorrar,Sep,lblNombreC
     cID = tk.Entry(ventana, textvariable=micID, state=tk.DISABLED)
     cID.place(x=150, y=90)
 
@@ -792,8 +774,8 @@ def varEntradas():
                          command=buscarCliente)
     bComprobar.place(x=257, y=120, width=20, height=20)
 
-    lblNombre = tk.Label(ventana, bg=Colors.ColorWhite, text="Nombres: ")
-    lblNombre.place(x=40, y=150)
+    lblNombreC = tk.Label(ventana, bg=Colors.ColorWhite, text="Nombres: ")
+    lblNombreC.place(x=40, y=150)
     lENombre = tk.Entry(ventana, textvariable=milENombre)
     lENombre.place(x=150, y=150)
 
@@ -834,7 +816,7 @@ def varEntradas():
     lblFormEval.place(x=40, y=360)
 
     global cVar1, cVar2,cVar3, cVar4
-    global lblVar1,lblVar2, lblVar3, lblVar4
+    global lblVar1,lblVar2, lblVar3, lblVar4,bEvaluar
     lblVar1 = tk.Label(ventana, bg=Colors.ColorWhite, text=NVariable1+": ")
     lblVar1.place(x=40, y=390)
     cVar1 = tk.Entry(ventana)
@@ -861,6 +843,7 @@ def varEntradas():
 
 
 def panel_evaluacion():
+    global panel,lblTitle,lblPrestamo,lblLimite,lblTipPr,lblResp,cLimit,lblCantPr,bCalcular
     panel = tk.Label(ventana, width=80, height=11, borderwidth=1, relief="sunken", bg="white")
     panel.place(x=333, y=415)
 
@@ -1426,7 +1409,7 @@ def cerrar_variables():
     cVal3Par1.place_forget()
     lblVariable.place_forget()
     lblID.place_forget()
-    lblNombre.place_forget()
+    lblNombreC.place_forget()
     lblTipo.place_forget()
     lblValorL.place_forget()
     lblFunPer.place_forget()
@@ -1611,6 +1594,7 @@ var3[var3val2]=v3_val2
 var3[var3val3]=v3_val3
 
 def grafVar3():
+    global canvas
     figEdad, ax0 = plt.subplots(figsize=(5.5, 3))
 
     ax0.plot(x_variable3, v3_val1, 'r', linewidth=2, label=var3val1)
