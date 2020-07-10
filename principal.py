@@ -1,3 +1,5 @@
+import random
+import string
 import tkinter as tk
 from tkinter import ttk, font, Label, PhotoImage, VERTICAL
 
@@ -13,6 +15,7 @@ from tkinter import messagebox
 from skfuzzy import control as ctrl
 import sqlite3
 import sys
+import mail
 
 ventana = tk.Tk()
 ventana.title("UDELLA - EVALUADOR DE PRÉSTAMO")
@@ -58,7 +61,7 @@ def login_screen():
     img_NoverPass.place(x=575, y=330, height=25)
 
     lblRecuperar = tk.Button(ventana, text="¿Olvidaste la contraseña?", bg=Colors.ColorPrimary, fg=Colors.ColorWhite,
-                             font=font.Font(size=8, weight="bold"), relief="flat")
+                             font=font.Font(size=8, weight="bold"), relief="flat",command=enviar_correo)
     lblRecuperar.configure(activebackground=Colors.ColorPrimary, activeforeground=Colors.ColorWhite)
     lblRecuperar.place(x=427, y=360)
 
@@ -67,6 +70,12 @@ def login_screen():
     BIniciar.configure(relief=tk.GROOVE, background=Colors.ColorSecundary, activebackground=Colors.ColorSecundaryDark)
     BIniciar.place(x=420, y=400, width=120, height=30)
 
+def enviar_correo():
+    global correo_del_usuario,correo
+
+    correo_del_usuario = easygui.enterbox("Ingrese el correo:","RECUPERACION DE CONTRASEÑA")
+
+    mail.recuperar_contraseña(correo_del_usuario)
 
 def login():
     miConexion = sqlite3.connect("BDPrestamoPersonal")
@@ -993,6 +1002,19 @@ bPrestamo = tk.Button(ventana, bg=Colors.ColorSecundary, text="PRÉSTAMO", state
 bPrestamo.configure(relief=tk.GROOVE, background=Colors.ColorSalida, activebackground=Colors.ColorSalidaDark)
 
 
+def generar_user_pass():
+    try:
+        atr_user = pNombre.get()
+        atr_pass = pApellido.get()
+        gen_usuario = atr_user[0] + atr_pass[0:5]
+        mipUsuario.set(gen_usuario)
+
+        caract = string.ascii_letters + string.digits
+        password = ("").join(random.choice(caract) for i in range(12))
+        mipContraseña.set(password)
+    except:
+        messagebox.showerror("ERROR", "Rellene los datos antes de generar")
+
 def personal_screen():
     global pID, pNombre, pApellido, pCorreo, pRol, pUsuario, pContraseña
     global mipID, mipNombre, mipApellido, mipCorreo, mipRol, mipUsuario, mipContraseña
@@ -1031,8 +1053,9 @@ def personal_screen():
 
     lblpRol = tk.Label(ventana, text="ROL:", bg=Colors.ColorWhite)
     lblpRol.place(x=275, y=130)
-    pRol = tk.Entry(ventana, textvariable=mipRol, state=tk.DISABLED)
+    pRol = ttk.Combobox(ventana,state=tk.DISABLED)
     pRol.place(x=350, y=130, width=150)
+    pRol["values"] = ["ASESOR", "ADMINISTRADOR"]
 
     lblpUsuario = tk.Label(ventana, text="USUARIO:", bg=Colors.ColorWhite)
     lblpUsuario.place(x=525, y=100)
@@ -1075,6 +1098,11 @@ def personal_screen():
                              font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
                              command=verTablaPersonal)
     bpActualizar.place(x=750, y=190, width=120, height=25)
+
+    bGenUser=tk.Button(ventana, text="GENERAR USUARIO Y CONTRASEÑA",bg=Colors.ColorSecundary,
+                             font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
+                             command=generar_user_pass)
+    bGenUser.place(x=535, y=60)
 
     # TABLA DE REGLAS
     global tabla_personal
@@ -1137,8 +1165,6 @@ def modificarPer():
     pApellido['state'] = tk.NORMAL
     pCorreo['state'] = tk.NORMAL
     pRol['state'] = tk.NORMAL
-    pUsuario['state'] = tk.NORMAL
-    pContraseña['state'] = tk.NORMAL
 
 def bloqPer():
     pNombre['state'] = tk.DISABLED
@@ -2140,6 +2166,7 @@ def definir_valor_x():
     global cant
     valor=easygui.enterbox("Ingrese la cantidad para el conjunto de entradas: Ejm: 21","VALOR")
     cant=int(valor)
+
 def grafica_3d_riesgo():
     definir_valor_x()
     controlar_riesgo_3d = ctrl.ControlSystemSimulation(control_riesgo, flush_after_run=cant * cant + 1)
