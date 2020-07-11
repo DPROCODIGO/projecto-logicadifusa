@@ -113,6 +113,24 @@ def switchNopass():
         img_NoverPass.place_forget()
         img_verPass.place(x=575, y=330, height=25)
 
+def comprobar_cel():
+    global dni_cliente
+    nombre_cliente=lENombre.get()
+    apellido_cliente=lEApellido.get()
+    correo_cliente= lEEMail.get()
+    cel_cliente = lECelular.get()
+    fech_cliente=lEFech_Nac.get()
+    dni_cliente=cDNI.get()
+
+    if nombre_cliente =="" or apellido_cliente =="" or correo_cliente =="" or cel_cliente=="" or fech_cliente=="" or dni_cliente=="":
+        messagebox.showerror("ERROR","EL CAMPO SE ENCUENTRA VACIO")
+    else:
+        if len(cel_cliente) > 9:
+            messagebox.showerror("ERROR", "INGRESE UN NÚMERO DE CELULAR CORRECTO")
+            milECelular.set("")
+        else:
+            crearCliente()
+
 def crearCliente():
     try:
         miConexion = sqlite3.connect("BDPrestamoPersonal")
@@ -133,6 +151,14 @@ def crearCliente():
     except:
         messagebox.showwarning("¡Advertencia!", "El usuario ya existe")
 
+
+def comprobar_DNI():
+    dni_cliente=cDNI.get()
+    if len(dni_cliente) == 8:
+        buscarCliente()
+    else:
+        messagebox.showerror("ERROR", "NO ESTA REGISTRADO EN LA BD")
+        milECelular.set("")
 
 def buscarCliente():
     miConexion = sqlite3.connect("BDPrestamoPersonal")
@@ -780,7 +806,7 @@ def varEntradas():
 
     bComprobar = tk.Button(ventana, image=Search)
     bComprobar.configure(relief=tk.GROOVE, background=Colors.ColorWhite, activebackground=Colors.ColorSecundaryDark,
-                         command=buscarCliente)
+                         command=comprobar_DNI)
     bComprobar.place(x=257, y=120, width=20, height=20)
 
     lblNombreC = tk.Label(ventana, bg=Colors.ColorWhite, text="Nombres: ")
@@ -810,7 +836,7 @@ def varEntradas():
 
     bAgregar = tk.Button(ventana, text="AGREGAR", image=Agregar, compound="left", bg=Colors.ColorSecundary,
                          font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
-                         command=crearCliente)
+                         command=comprobar_cel)
     bAgregar.place(x=40, y=305, height=30)
 
     bBorrar = tk.Button(ventana, text="LIMPIAR", image=Borrar, compound="left", bg=Colors.ColorSecundary,
@@ -846,10 +872,9 @@ def varEntradas():
     cVar4 = tk.Entry(ventana)
     cVar4.place(x=150, y=480)
 
-    bEvaluar = tk.Button(ventana, bg=Colors.ColorSecundary, text="EVALUAR", font=comp, command=evaluar_prest)
+    bEvaluar = tk.Button(ventana, bg=Colors.ColorSecundary, text="EVALUAR", font=comp, command=validaciones_var)
     bEvaluar.configure(relief=tk.GROOVE, background=Colors.ColorSecundary, activebackground=Colors.ColorSecundaryDark)
     bEvaluar.place(x=120, y=520)
-
 
 def panel_evaluacion():
     global panel,lblTitle,lblPrestamo,lblLimite,lblTipPr,lblResp,cLimit,lblCantPr,bCalcular
@@ -1068,7 +1093,7 @@ def personal_screen():
     pContraseña.place(x=650, y=130, width=150)
 
     # BOTONES
-    global bpBuscar, bpModificar, bpLimpiar, bpAgregar, bpGuardar, bpActualizar
+    global bpBuscar, bpModificar, bpLimpiar, bpAgregar, bpGuardar, bpActualizar,bGenUser
     bpBuscar = tk.Button(ventana, text="BUSCAR", image=Buscar23, compound="left", bg=Colors.ColorSecundary,
                          font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
                          command=buscarPersonal)
@@ -1405,7 +1430,7 @@ def cerrar_personal():
     bpGuardar.place_forget()
     bpAgregar.place_forget()
     bpActualizar.place_forget()
-
+    bGenUser.place_forget()
     tabla_personal.place_forget()
 
 def cerrar_variables():
@@ -1814,6 +1839,22 @@ control = ctrl.ControlSystem(
 
 controlar = ctrl.ControlSystemSimulation(control)
 plt.show()
+def validaciones_var():
+    obtener_variablesC()
+    if (float(variable1) < float(v1val1Par1)):
+        messagebox.showerror("ERROR","El dato ingresado en "+NVariable1+" es muy bajo")
+    elif (float(variable1) > float(500000)):
+        messagebox.showerror("ERROR","El dato ingresado en "+NVariable1+" es muy alto")
+    elif (float(variable2) < float(v2val1Par1)):
+        messagebox.showerror("ERROR","El dato ingresado en "+NVariable2+" es muy bajo")
+    elif (float(variable2) > float(500000)):
+        messagebox.showerror("ERROR","El dato ingresado en "+NVariable2+" es muy alto")
+    elif (float(variable3) < float(v3val1Par1)):
+        messagebox.showerror("ERROR", "La " + NVariable3 + " ingresada es muy bajo")
+    elif (float(variable3) > float(v3val3Par4)):
+        messagebox.showerror("ERROR", "La " + NVariable3 + " ingresada es muy alto")
+    else:
+        evaluar_prest()
 
 def evaluar_prest():
     panel_evaluacion()
