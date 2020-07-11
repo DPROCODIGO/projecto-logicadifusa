@@ -16,6 +16,8 @@ from skfuzzy import control as ctrl
 import sqlite3
 import sys
 import mail
+from datetime import datetime
+
 
 ventana = tk.Tk()
 ventana.title("UDELLA - EVALUADOR DE PRÉSTAMO")
@@ -741,6 +743,7 @@ RutaLogo = "Imagenes\Logo.png"
 RutaBackground = "Imagenes\Background.png"
 RutaSearch = "Imagenes\Search.png"
 RutaAgregar = "Imagenes\Agregar.png"
+RutaAgregar23 = "Imagenes\Agregar23.png"
 RutaBorrar = "Imagenes\img_borrar.png"
 RutaBorrar23 = "Imagenes\img_borrar23.png"
 RutaModificar23 = "Imagenes\img_modificar23.png"
@@ -756,6 +759,7 @@ Logo = PhotoImage(file=RutaLogo)
 BG = PhotoImage(file=RutaBackground)
 Search = PhotoImage(file=RutaSearch)
 Agregar = PhotoImage(file=RutaAgregar)
+Agregar23 = PhotoImage(file=RutaAgregar23)
 Borrar = PhotoImage(file=RutaBorrar)
 Borrar23 = PhotoImage(file=RutaBorrar23)
 Modificar23 = PhotoImage(file=RutaModificar23)
@@ -855,22 +859,30 @@ def varEntradas():
     lblVar1 = tk.Label(ventana, bg=Colors.ColorWhite, text=NVariable1+": ")
     lblVar1.place(x=40, y=390)
     cVar1 = tk.Entry(ventana)
-    cVar1.place(x=150, y=390)
+    cVar1.place(x=175, y=390,width=40)
+    lblTitle1 = tk.Label(ventana, bg=Colors.ColorWhite, text="S/.")
+    lblTitle1.place(x=150, y=390)
 
     lblVar2 = tk.Label(ventana, bg=Colors.ColorWhite, text=NVariable2+": ")
     lblVar2.place(x=40, y=420)
     cVar2 = tk.Entry(ventana)
-    cVar2.place(x=150, y=420)
+    cVar2.place(x=175, y=420,width=40)
+    lblTitle2 = tk.Label(ventana, bg=Colors.ColorWhite, text="S/.")
+    lblTitle2.place(x=150, y=420)
 
     lblVar3 = tk.Label(ventana, bg=Colors.ColorWhite, text=NVariable3+": ")
     lblVar3.place(x=40, y=450)
-    cVar3 = tk.Entry(ventana, textvariable=micEdad)
-    cVar3.place(x=150, y=450)
+    cVar3 = tk.Entry(ventana, textvariable=micEdad,state=tk.DISABLED)
+    cVar3.place(x=150, y=450,width=20)
+    lblTitle3=tk.Label(ventana,bg=Colors.ColorWhite,text="años")
+    lblTitle3.place(x=170,y=450)
 
     lblVar4 = tk.Label(ventana, bg=Colors.ColorWhite, text=NVariable4+": ")
     lblVar4.place(x=40, y=480)
     cVar4 = tk.Entry(ventana)
-    cVar4.place(x=150, y=480)
+    cVar4.place(x=150, y=480,width=20)
+    lblTitle4 = tk.Label(ventana, bg=Colors.ColorWhite, text="meses")
+    lblTitle4.place(x=170, y=480)
 
     bEvaluar = tk.Button(ventana, bg=Colors.ColorSecundary, text="EVALUAR", font=comp, command=validaciones_var)
     bEvaluar.configure(relief=tk.GROOVE, background=Colors.ColorSecundary, activebackground=Colors.ColorSecundaryDark)
@@ -1109,7 +1121,7 @@ def personal_screen():
                           command=limpiarPersonal)
     bpLimpiar.place(x=340, y=190, width=110, height=25)
 
-    bpAgregar = tk.Button(ventana, text="AGREGAR", image=Borrar23, compound="left", bg=Colors.ColorSecundary,
+    bpAgregar = tk.Button(ventana, text="AGREGAR", image=Agregar23, compound="left", bg=Colors.ColorSecundary,
                           font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
                           command=agregar_personal)
     bpAgregar.place(x=480, y=190, width=110, height=25)
@@ -1841,20 +1853,23 @@ controlar = ctrl.ControlSystemSimulation(control)
 plt.show()
 def validaciones_var():
     obtener_variablesC()
-    if (float(variable1) < float(v1val1Par1)):
-        messagebox.showerror("ERROR","El dato ingresado en "+NVariable1+" es muy bajo")
-    elif (float(variable1) > float(500000)):
-        messagebox.showerror("ERROR","El dato ingresado en "+NVariable1+" es muy alto")
-    elif (float(variable2) < float(v2val1Par1)):
-        messagebox.showerror("ERROR","El dato ingresado en "+NVariable2+" es muy bajo")
-    elif (float(variable2) > float(500000)):
-        messagebox.showerror("ERROR","El dato ingresado en "+NVariable2+" es muy alto")
-    elif (float(variable3) < float(v3val1Par1)):
-        messagebox.showerror("ERROR", "La " + NVariable3 + " ingresada es muy bajo")
-    elif (float(variable3) > float(v3val3Par4)):
-        messagebox.showerror("ERROR", "La " + NVariable3 + " ingresada es muy alto")
+    if variable1 =="" or variable2 =="" or variable3 =="" or variable4 =="":
+        messagebox.showerror("ERROR","CAMPOS VACIOS")
     else:
-        evaluar_prest()
+        if (float(variable1) < float(v1val1Par1)):
+            messagebox.showerror("ERROR","El dato ingresado en "+NVariable1+" es muy bajo")
+        elif (float(variable1) > float(500000)):
+            messagebox.showerror("ERROR","El dato ingresado en "+NVariable1+" es muy alto")
+        elif (float(variable2) < float(v2val1Par1)):
+            messagebox.showerror("ERROR","El dato ingresado en "+NVariable2+" es muy bajo")
+        elif (float(variable2) > float(500000)):
+            messagebox.showerror("ERROR","El dato ingresado en "+NVariable2+" es muy alto")
+        elif (float(variable3) < float(v3val1Par1)):
+            messagebox.showerror("ERROR", "La " + NVariable3 + " ingresada es muy bajo")
+        elif (float(variable3) > float(v3val3Par4)):
+            messagebox.showerror("ERROR", "La " + NVariable3 + " ingresada es muy alto")
+        else:
+            evaluar_prest()
 
 def evaluar_prest():
     panel_evaluacion()

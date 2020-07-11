@@ -41,4 +41,3 @@ def recuperar_contraseña(correo_usuario):
     server.sendmail(msg['From'], msg['To'], msg.as_string())
     messagebox.showinfo("DB","Enviado exitosamente.\nPor Favor, revise su correo.")
     server.quit()
-
