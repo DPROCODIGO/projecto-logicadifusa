@@ -94,7 +94,9 @@ def login():
 
     if DatosEmpleado:
         if Rol == "ASESOR":
+            global id_login
             messagebox.showinfo("LOGIN CORRECTO", "ROL ASESOR")
+            id_login=Empleado[0]
             ingresar()
         elif Rol == "ADMINISTRADOR":
             messagebox.showinfo("LOGIN CORRECTO", "ROL ADMIN")
@@ -889,7 +891,7 @@ def varEntradas():
     bEvaluar.place(x=120, y=520)
 
 def panel_evaluacion():
-    global panel,lblTitle,lblPrestamo,lblLimite,lblTipPr,lblResp,cLimit,lblCantPr,bCalcular
+    global panel,lblTitle,lblPrestamo,lblLimite,lblTipPr,lblResp,cLimit,lblCantPr,bCalcular,bGuardarPrestamo
     panel = tk.Label(ventana, width=80, height=11, borderwidth=1, relief="sunken", bg="white")
     panel.place(x=333, y=415)
 
@@ -917,7 +919,10 @@ def panel_evaluacion():
     lblCantPr.place(x=530, y=520,width=65)
 
     bCalcular = tk.Button(ventana, text="CALCULAR", bg=Colors.ColorSecundary,command=comprobar_valores)
-    bCalcular.place(x=385, y=545)
+    bCalcular.place(x=340, y=545)
+
+    bGuardarPrestamo = tk.Button(ventana, text="GUARDAR PRESTAMO", state=tk.DISABLED,bg=Colors.ColorSecundary,command=guardar_prestamo)
+    bGuardarPrestamo.place(x=415, y=545)
 
 def switchVar3():
     if (bVariable3['state'] == tk.NORMAL):
@@ -1880,7 +1885,7 @@ def evaluar_prest():
     controlar.input[NVariable4] = int(variable4)
     controlar.compute()
 
-    global resultado,cantPR,cantLimite,round_resultado
+    global resultado,cantLimite,round_resultado
     resultado=controlar.output['prestamo']
     round_resultado=round(resultado,2)
     cantLimite=float(resultado)*2
@@ -1891,7 +1896,7 @@ def evaluar_prest():
     prestamo.view(sim=controlar)
 
 def comprobar_valores():
-    global porcentajePR
+    global porcentajePR,cantPR
     # cantidad de prestamo para el cliente
     cantPR = lblCantPr.get()
 
@@ -1906,7 +1911,7 @@ def comprobar_valores():
         lblCantPr['state']=tk.DISABLED
 
 def calcular_riesgo():
-    global lblRiesgo,riesgo,lblpor
+    global lblRiesgo,riesgo,lblpor,lblDateTime
     definir_reglas_riesgo()
     controlar_riesgo.input['Porcentaje_Prestamo'] = porcentajePR
     controlar_riesgo.input[NVariable2] = int(variable2)
@@ -1930,6 +1935,7 @@ def calcular_riesgo():
     bVerRiesgo.place(x=720, y=500)
     lblRiesgo.configure(text=str(round(riesgo, 2)))
     color_riesgo()
+    bGuardarPrestamo['state' ]= tk.NORMAL
 
 def ver_riesgo():
     varS.view(sim=controlar_riesgo)
@@ -2191,6 +2197,21 @@ def ver_reglas():
         plt.show()
     else:
         messagebox.showerror("ERROR","La regla ingresada no existe!")
+
+def guardar_prestamo():
+
+    miConexion = sqlite3.connect("BDPrestamoPersonal")
+
+    miCursor = miConexion.cursor()
+
+    miCursor.execute("INSERT INTO PRESTAMOS VALUES(NULL, '" + lblCantPr.get() +
+                     "','" + riesgo +
+                     "','" + lblDateTime +
+                     "','" + lblResp +
+                     "','" + cID.get() +
+                     "','" + id_login + "')")
+    miConexion.commit()
+    messagebox.showinfo("REGISTRO", "El prestamo ha sido almacenado con éxito")
 
 def ver_reglas_riesgo():
     if (cReglaRiesgo == 'regla 1'):
