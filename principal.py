@@ -147,7 +147,7 @@ def crearCliente():
                          "','" + lEEMail.get() +
                          "','" + lECelular.get() +
                          "','" + lEFech_Nac.get() +
-                         "',NULL,NULL)")
+                         "')")
 
         miConexion.commit()
 
@@ -1736,6 +1736,7 @@ def grafPrestamo():
     toolbar.place(x=333, y=375)
     toolbar.update()
 
+
 def definir_reglas_riesgo():
     global rule1,rule2,rule3,rule4,rule5,rule6,rule7,rule8,rule9,control_riesgo,controlar_riesgo
 
@@ -2252,12 +2253,13 @@ def definir_valor_x():
 def grafica_3d_riesgo():
     definir_valor_x()
     controlar_riesgo_3d = ctrl.ControlSystemSimulation(control_riesgo, flush_after_run=cant * cant + 1)
-    upsampled = np.linspace(1, 100, cant)
-    x, y = np.meshgrid(upsampled, upsampled)
+    upsampled = np.linspace(0, 100, cant)
+    upsampled2 = np.linspace(v2val1Par1, v2val3Par4, cant)
+    x, y = np.meshgrid(upsampled, upsampled2)
     z = np.zeros_like(x)
     for i in range(cant):
         for j in range(cant):
-            controlar_riesgo_3d.input['Porcentaje_Prestamo'] = x[i, j]
+            controlar_riesgo_3d.input['Porcentaje_Prestamo'] = x[i,j]
             controlar_riesgo_3d.input[NVariable2] = y[i, j]
             controlar_riesgo_3d.compute()
             z[i, j] = controlar_riesgo_3d.output['Riesgo']

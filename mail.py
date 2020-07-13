@@ -22,7 +22,7 @@ def recuperar_contraseña(correo_usuario):
 
     message="HOLA!\n\nTú estas recibiendo este correo porque nosotros recibimos una solicitud de envio de datos para tu cuenta de correo.\n\n\n"
     messageUser = "Usuario: " + Rec_Usuario
-    messagePass = "Contraseña: " + Rec_Pass
+    messagePass = "\nContraseña: " + Rec_Pass
 
     password = "udella2020"
     msg['From'] = "udella.project@gmail.com"
