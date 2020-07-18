@@ -1504,23 +1504,23 @@ def obtener_variablesC():
 
 # DEFINICION DE UNIVERSO
 # Rango de la calidad del ingresos (soles)
-x_variable1 = np.arange(v1val1Par1, v1val3Par4, 1)
+x_variable1 = np.arange(v1val1Par1, int(v1val3Par4+1), 1)
 
 # Rango del porcentaje de capapago (soles)
-x_variable2 = np.arange(v2val1Par1, v2val3Par4, 1)
+x_variable2 = np.arange(v2val1Par1, int(v2val3Par4+1), 1)
 
 # Rango de la calidad de la edad (años)
-x_variable3 = np.arange(v3val1Par1, v3val3Par4, 1)
+x_variable3 = np.arange(v3val1Par1, int(v3val3Par4+1), 1)
 
 # Rango del porcentaje de tiempo (meses)
-x_variable4 = np.arange(v4val1Par1, v4val3Par4, 1)
+x_variable4 = np.arange(v4val1Par1, int(v4val3Par4+1), 1)
 
 # Rango del porcentaje de préstamo (soles)
-x_prestamo = np.arange(500, 50000, 1)
+x_prestamo = np.arange(500, 50001, 1)
 
-x_porc_prestamo=np.arange(0,100,1)
+x_porc_prestamo=np.arange(0,101,1)
 
-x_porc_riesgo=np.arange(0,100,1)
+x_porc_riesgo=np.arange(0,101,1)
 
 #CREACION DE VARIABLES DE ENTRADA(ANTECEDENT) y SALIDA(CONSEQUENT)
 var1=ctrl.Antecedent(x_variable1, NVariable1)
