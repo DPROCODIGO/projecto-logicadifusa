@@ -921,9 +921,6 @@ def panel_evaluacion():
     bCalcular = tk.Button(ventana, text="CALCULAR", bg=Colors.ColorSecundary,command=comprobar_valores)
     bCalcular.place(x=340, y=545)
 
-    bGuardarPrestamo = tk.Button(ventana, text="GUARDAR PRESTAMO", state=tk.DISABLED,bg=Colors.ColorSecundary,command=guardar_prestamo)
-    bGuardarPrestamo.place(x=415, y=545)
-
 def switchVar3():
     if (bVariable3['state'] == tk.NORMAL):
         # Edad
@@ -942,7 +939,6 @@ def switchVar3():
         # Préstamo
         bPrestamo['state'] = tk.NORMAL
         bPrestamo['bg'] = Colors.ColorSalida
-
 
 def switchVar1():
     if (bVariable1['state'] == tk.NORMAL):
@@ -1289,31 +1285,16 @@ def reglas_screen():
     crCondicion4.place(x=550, y=100, width=75)
 
     #BOTONES
-    global brBuscar, brModificar, brLimpiar, brGuardar, brActualizar
+    global brBuscar, brLimpiar
     brBuscar = tk.Button(ventana, text="BUSCAR", image=Buscar23, compound="left", bg=Colors.ColorSecundary,
                         font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
                         command=buscarReglas)
-    brBuscar.place(x=80, y=190, width=110, height=25)
-
-    brModificar = tk.Button(ventana, text="MODIFICAR", image=Modificar23, compound="left", bg=Colors.ColorSecundary,
-                           font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
-                           command=modificarReg)
-    brModificar.place(x=237.5, y=190, width=110, height=25)
+    brBuscar.place(x=700, y=70, width=110, height=25)
 
     brLimpiar = tk.Button(ventana, text="LIMPIAR", image=Borrar23, compound="left", bg=Colors.ColorSecundary,
                          font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
                          command=limpiarReglas)
-    brLimpiar.place(x=395, y=190, width=110, height=25)
-
-    brGuardar = tk.Button(ventana, text="GUARDAR", image=Guardar23, compound="left", bg=Colors.ColorSecundary,
-                         font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
-                         command=guardarReg)
-    brGuardar.place(x=552.5, y=190, width=110, height=25)
-
-    brActualizar = tk.Button(ventana, text="ACTUALIZAR", image=Actualizar23, compound="left", bg=Colors.ColorSecundary,
-                            font=font.Font(size=10, weight="bold"), activebackground=Colors.ColorSecundary,
-                            command=verTablaReglas)
-    brActualizar.place(x=710, y=190, width=120, height=25)
+    brLimpiar.place(x=700, y=100, width=110, height=25)
 
     #TABLA DE REGLAS
     global tabla_regla
@@ -1325,7 +1306,7 @@ def reglas_screen():
     tabla_regla.heading("Condicion3", text="Condicion3")
     tabla_regla.heading("Condicion4", text="Condicion4")
     tabla_regla.heading("Regla", text="Regla")
-    tabla_regla.place(x=10, y=250, width=900, height=330)
+    tabla_regla.place(x=10, y=150, width=900, height=430)
     verTablaReglas()
 
 def verTablaReglas():
@@ -1368,35 +1349,12 @@ def limpiarReglas():
     mirCondicion4.set("")
     mirRegla.set("")
 
-def modificarReg():
-    crCondicion1['state'] = tk.NORMAL
-    crCondicion2['state'] = tk.NORMAL
-    crCondicion3['state'] = tk.NORMAL
-    crCondicion4['state'] = tk.NORMAL
-    crRegla['state'] = tk.NORMAL
-
 def bloqReg():
     crCondicion1['state'] = tk.DISABLED
     crCondicion2['state'] = tk.DISABLED
     crCondicion3['state'] = tk.DISABLED
     crCondicion4['state'] = tk.DISABLED
     crRegla['state'] = tk.DISABLED
-
-def guardarReg():
-    miConexion = sqlite3.connect("BDPrestamoPersonal")
-
-    miCursor = miConexion.cursor()
-
-    miCursor.execute("UPDATE REGLAS SET Condicion1='" + crCondicion1.get() +
-                     "',Condicion2='" + crCondicion2.get() +
-                     "',Condicion3='" + crCondicion3.get() +
-                     "',Condicion4='" + crCondicion4.get() +
-                     "',Regla='" + crRegla.get() +
-                     "'WHERE ID_Regla=" + crID.get())
-
-    messagebox.showinfo("DB", "LOS DATOS SE GUARDARON CORRECTAMENTE")
-    miConexion.commit()
-    bloqReg()
 
 
 def abrir_variables():
@@ -1936,7 +1894,6 @@ def calcular_riesgo():
     bVerRiesgo.place(x=720, y=500)
     lblRiesgo.configure(text=str(round(riesgo, 2)))
     color_riesgo()
-    bGuardarPrestamo['state' ]= tk.NORMAL
 
 def ver_riesgo():
     varS.view(sim=controlar_riesgo)
@@ -2198,21 +2155,6 @@ def ver_reglas():
         plt.show()
     else:
         messagebox.showerror("ERROR","La regla ingresada no existe!")
-
-def guardar_prestamo():
-
-    miConexion = sqlite3.connect("BDPrestamoPersonal")
-
-    miCursor = miConexion.cursor()
-
-    miCursor.execute("INSERT INTO PRESTAMOS VALUES(NULL, '" + lblCantPr.get() +
-                     "','" + riesgo +
-                     "','" + lblDateTime +
-                     "','" + lblResp +
-                     "','" + cID.get() +
-                     "','" + id_login + "')")
-    miConexion.commit()
-    messagebox.showinfo("REGISTRO", "El prestamo ha sido almacenado con éxito")
 
 def ver_reglas_riesgo():
     if (cReglaRiesgo == 'regla 1'):
